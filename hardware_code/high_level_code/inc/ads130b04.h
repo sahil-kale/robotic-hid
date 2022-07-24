@@ -57,7 +57,10 @@ void setGlobalChop(bool enable);
  * @brief Set the Clock Source bit
  * 
  * @param use_external Use external clock
+ * @param OSR oversample rate
+ * 
+ * @note this driver assumes that the clock ONLY uses the high power mode. 
  */
-void setClockSource(bool use_external);
+void setClock(bool use_external, uint8_t OSR);
 
 #endif /* ADS130B04_H */
