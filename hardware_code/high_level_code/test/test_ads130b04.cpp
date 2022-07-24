@@ -30,7 +30,7 @@ TEST(ads130b04_test, read_register_message_generation)
     uint16_t return_value = 0x1234U;
     uint8_t testTxBuffer[3] = {0};
     testTxBuffer[0] = (0xA0U) | (register_value >> 1U);
-    testTxBuffer[1] = (return_value & 1U) << 7U;
+    testTxBuffer[1] = (register_value & 1U) << 7U;
     uint8_t testRxBuffer[3] = {0x12, 0x34, 0x00};
     uint8_t emptyBuffer[3] = {0};
 
