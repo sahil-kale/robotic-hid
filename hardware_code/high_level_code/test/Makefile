@@ -26,6 +26,7 @@ CPPUTEST_CPPFLAGS+=-Wno-error=unused-parameter
 CPPUTEST_CPPFLAGS+=-Wno-error=unused-variable
 CPPUTEST_CPPFLAGS+=-Wno-error=conversion
 CPPUTEST_CPPFLAGS+=-Wno-error=sign-conversion
+CPPUTEST_CPPFLAGS+=-Wno-error=unused-const-variable
 
 # Add the library linking to use Cppumock
 LD_LIBRARIES += -L$(CPPUTEST_HOME)/lib -lCppUTestExt

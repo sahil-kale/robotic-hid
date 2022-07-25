@@ -3,6 +3,7 @@
 //In order to avoid the compilier warning "Conversion"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wunused-const-variable"
 
 #include "hal_ads130b04.h"
 #include "ads130b04.h"
@@ -11,6 +12,14 @@
 
 //PRIVATE DECLARATIONS
 #define ADS130B04_SPI_WORD_SIZE_BYTES (3U)
+
+//Register addresses
+static const uint16_t ADS130B04_REG_ID = 0x00;
+static const uint16_t ADS130B04_REG_STATUS = 0x01;
+static const uint16_t ADS130B04_REG_MODE = 0x02;
+static const uint16_t ADS130B04_REG_CLOCK = 0x03;
+static const uint16_t ADS130B04_REG_GAIN = 0x04;
+static const uint16_t ADS130B04_REG_GLOBAL_CHOP_OFFSET = 0x06;
 
 //PUBLIC DEFINITIONS
 void init_adc(void)
@@ -77,6 +86,14 @@ void writeRegister(uint8_t reg, uint16_t value)
 
 }
 
+void writeRegisterMasked(uint8_t reg, uint16_t value, uint16_t mask)
+{
+    uint16_t regValue = readRegister(reg);
+    regValue &= ~mask;
+    regValue |= (value & mask);
+    writeRegister(reg, regValue);
+}
+
 
 uint16_t readRegister(uint8_t reg)
 {
@@ -112,6 +129,42 @@ uint16_t readRegister(uint8_t reg)
         ads130b04_spi_transfer(txBuffer, rxBuffer, sizeof(txBuffer));
     }
     return returnValue;
+}
+
+
+/******************/
+//Individual register stuff
+
+void setClock(bool use_external, uint8_t OSR)
+{
+    static const uint8_t CLK_SEL_BIT_POS = 7U;
+    static const uint8_t OSR_BIT_POS = 2U;
+    static const uint16_t setClockMask = 0x00B4U; //0b10011100;
+    uint16_t value_to_write = use_external << CLK_SEL_BIT_POS;
+    value_to_write |= ((OSR & 0x07) << OSR_BIT_POS);
+
+    writeRegisterMasked(ADS130B04_REG_CLOCK, value_to_write, setClockMask);
+}
+
+void setGlobalChop(uint8_t gc_delay, bool enable)
+{
+    static const uint8_t GC_DELAY_BIT_POS = 9U;
+    static const uint8_t GC_EN_BIT_POS = 8U;
+    static const uint16_t setGlobalChopMask = 0x1F00U; //0b0001111100000000;
+
+    uint16_t value_to_write = (gc_delay & 0x0F) << GC_DELAY_BIT_POS;
+    value_to_write |= (enable << GC_EN_BIT_POS);
+    writeRegisterMasked(ADS130B04_REG_GLOBAL_CHOP_OFFSET, value_to_write, setGlobalChopMask);
+
+}
+
+void setChannelPGA(uint8_t channel, uint16_t pga)
+{
+    uint8_t channel_offset = channel * 4U;
+    uint16_t mask = 0x07U << (channel_offset);
+    uint16_t value_to_write = (pga & 0x07) << (channel_offset);
+
+    writeRegisterMasked(ADS130B04_REG_GAIN, value_to_write, mask);
 }
 
 #pragma GCC diagnostic pop

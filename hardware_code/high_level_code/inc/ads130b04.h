@@ -32,7 +32,7 @@ void writeRegister(uint8_t reg, uint16_t value);
  * @param value value to write to register
  * @param mask Mask to apply to register to only set bits that are set in mask
  */
-void writeRegisterMasked(uint8_t reg, uint8_t value, uint8_t mask);
+void writeRegisterMasked(uint8_t reg, uint16_t value, uint16_t mask);
 
 /**
  * @brief Read from single register
@@ -45,9 +45,10 @@ uint16_t readRegister(uint8_t reg);
 /**
  * @brief Set the Global Chop variable
  * 
- * @param enable 
+ * @param gc_delay global chop delay
+ * @param enable enable global chop
  */
-void setGlobalChop(bool enable);
+void setGlobalChop(uint8_t gc_delay, bool enable);
 
 /**
  * @brief Set the Clock Source bit

@@ -11,7 +11,6 @@ extern "C" {
 }
 
 
-
 // create a test group
 TEST_GROUP(ads130b04_test){
 
@@ -35,7 +34,9 @@ TEST(ads130b04_test, read_register_message_generation)
     uint8_t testTxBuffer[3] = {0};
     testTxBuffer[0] = (0xA0U) | (register_value >> 1U);
     testTxBuffer[1] = (register_value & 1U) << 7U;
-    uint8_t testRxBuffer[3] = {0x12, 0x34, 0x00};
+    uint8_t testRxBuffer[3] = {0};
+    testRxBuffer[0] = return_value >> 8U;
+    testRxBuffer[1] = 0xFFU & return_value;
     uint8_t emptyBuffer[3] = {0};
 
 
