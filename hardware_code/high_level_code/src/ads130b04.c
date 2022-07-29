@@ -21,6 +21,9 @@ static const uint16_t ADS130B04_REG_CLOCK = 0x03;
 static const uint16_t ADS130B04_REG_GAIN = 0x04;
 static const uint16_t ADS130B04_REG_GLOBAL_CHOP_OFFSET = 0x06;
 
+//Other assumptions
+static const uint8_t ADS130B04_NUM_CHANNELS = 4U;
+
 //PUBLIC DEFINITIONS
 void init_adc(void)
 {
@@ -33,9 +36,29 @@ void init_adc(void)
 adc_data_t get_adc_data(void)
 {
     adc_data_t data = {0};
+    uint8_t empty_buffer[ADS130B04_SPI_WORD_SIZE_BYTES] = {0};
+    uint8_t working_buffer[ADS130B04_SPI_WORD_SIZE_BYTES] = {0};
 
-    //Read the data from the ADS130B04
-    //ads130b04_spi_transfer(NULL, 0, (uint8_t*)&data, sizeof(data));
+    //Initaite a SPI transfer with empty buffer as tx
+    ads130b04_spi_transfer(empty_buffer, working_buffer, ADS130B04_SPI_WORD_SIZE_BYTES);
+    
+    //Copy the status register, which is made up of the 1st 16 bits of working_buffer
+    data.status_register = working_buffer[0] | (working_buffer[1] << 8);
+
+    //Clear the working buffer
+    memset(working_buffer, 0, ADS130B04_SPI_WORD_SIZE_BYTES);
+
+    for(size_t i = 0; i< ADS130B04_NUM_CHANNELS; i++)
+    {
+        memset(working_buffer, 0, ADS130B04_SPI_WORD_SIZE_BYTES);
+        //Initaite a SPI transfer with empty buffer as tx
+        ads130b04_spi_transfer(empty_buffer, working_buffer, ADS130B04_SPI_WORD_SIZE_BYTES);
+        //Copy the ADC data, which is made up of the 1st 16 bits of working_buffer, into the appropriate channel
+        data.adc_data[i] = working_buffer[1] | (working_buffer[0] << 8);
+    }
+
+    //CRC call
+    ads130b04_spi_transfer(empty_buffer, working_buffer, ADS130B04_SPI_WORD_SIZE_BYTES);
 
     return data;
 }

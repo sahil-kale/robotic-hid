@@ -8,7 +8,8 @@
 //Define struct to return ADC data in
 typedef struct
 {
-    uint16_t adc_data[NUM_ADC_CHANNELS];
+    uint16_t status_register;
+    int16_t adc_data[NUM_ADC_CHANNELS];
 } adc_data_t;
 
 

@@ -159,8 +159,10 @@ TEST(ads130b04_test, get_adc_data)
     uint8_t testRxBuffer1[3] = {0x7F, 0xFF, 0x00}; //decimal value is 32767
     uint8_t testRxBuffer2[3] = {0x80, 0x00, 0x00}; //decimal value is -32768
     uint8_t testRxBuffer3[3] = {0x00, 0x01, 0x00}; //decimal value is 1
-    uint8_t testRxBuffer4[3] = {0x40, 0x00, 0x00}; //decimal value is -1
-    adc_data_t expected_data = {0};
+    uint8_t testRxBuffer4[3] = {0x00, 0x40, 0x00}; //decimal value is -1
+    uint8_t testRxBufferStatus[3] = {0x00, 0x00, 0x0F}; //DRDY flags set
+    adc_data_t expected_data;
+    expected_data.status_register = 0x0F;
     expected_data.adc_data[0] = 32767;
     expected_data.adc_data[1] = -32768;
     expected_data.adc_data[2] = 1;
@@ -169,7 +171,7 @@ TEST(ads130b04_test, get_adc_data)
     //Transfer null code in response
     mock_c()->expectOneCall("ads130b04_spi_transfer")
             ->withMemoryBufferParameter("txBuffer", emptyBuffer, sizeof(emptyBuffer))
-            ->withOutputParameterReturning("rxBuffer", emptyBuffer, sizeof(emptyBuffer));
+            ->withOutputParameterReturning("rxBuffer", testRxBufferStatus, sizeof(testRxBufferStatus));
 
     //Transfer the first buffer ADC data
     mock_c()->expectOneCall("ads130b04_spi_transfer")
