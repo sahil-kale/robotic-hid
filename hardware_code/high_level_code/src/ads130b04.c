@@ -30,6 +30,8 @@ void init_adc(void)
     set_sync_reset_pin(true);
     for(size_t i = 0; i<2000; i++); //Crude Delay but fast enough for the ADS130B04 to reset.
     set_sync_reset_pin(false);
+    //Set clock to internal clock and osr to 8192
+    setClock(false, 0x06);
 
 }
 
@@ -38,6 +40,8 @@ adc_data_t get_adc_data(void)
     adc_data_t data = {0};
     uint8_t empty_buffer[ADS130B04_SPI_WORD_SIZE_BYTES] = {0};
     uint8_t working_buffer[ADS130B04_SPI_WORD_SIZE_BYTES] = {0};
+
+    assert_chip_select(true);
 
     //Initaite a SPI transfer with empty buffer as tx
     ads130b04_spi_transfer(empty_buffer, working_buffer, ADS130B04_SPI_WORD_SIZE_BYTES);
@@ -60,11 +64,14 @@ adc_data_t get_adc_data(void)
     //CRC call
     ads130b04_spi_transfer(empty_buffer, working_buffer, ADS130B04_SPI_WORD_SIZE_BYTES);
 
+    assert_chip_select(false);
+
     return data;
 }
 
 void writeRegister(uint8_t reg, uint16_t value)
 {
+    assert_chip_select(true);
     static const uint16_t CMD_WREG = 0x6000U; //0b01100000;
     static const uint16_t CMD_WREG_ADDR_OFFSET = 7U;
 
@@ -107,6 +114,8 @@ void writeRegister(uint8_t reg, uint16_t value)
         ads130b04_spi_transfer(txBuffer, rxBuffer, sizeof(txBuffer));
     }
 
+    assert_chip_select(false);
+
 }
 
 void writeRegisterMasked(uint8_t reg, uint16_t value, uint16_t mask)
@@ -120,6 +129,7 @@ void writeRegisterMasked(uint8_t reg, uint16_t value, uint16_t mask)
 
 uint16_t readRegister(uint8_t reg)
 {
+    assert_chip_select(true);
     static const uint16_t CMD_RREG = 0xA000U; //0b1010 0000 0000 0000
     static const uint16_t CMD_RREG_ADDR_OFFSET = 7U;
     
@@ -151,6 +161,9 @@ uint16_t readRegister(uint8_t reg)
     {
         ads130b04_spi_transfer(txBuffer, rxBuffer, sizeof(txBuffer));
     }
+
+    assert_chip_select(false);
+
     return returnValue;
 }
 

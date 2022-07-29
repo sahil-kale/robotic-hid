@@ -11,6 +11,14 @@
  */
 void set_sync_reset_pin(bool value);
 
+
+/**
+ * @brief Set the chip select pin
+ * 
+ * @param value high is selected, low is deselected
+ */
+void assert_chip_select(bool value);
+
 /**
  * @brief SPI transfer function for the ADS130B04.
  * 

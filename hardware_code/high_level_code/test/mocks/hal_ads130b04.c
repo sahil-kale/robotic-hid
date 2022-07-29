@@ -12,3 +12,8 @@ void ads130b04_spi_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint8_t len)
 
 
 }
+
+void assert_chip_select(bool value)
+{
+    mock_c()->actualCall("assert_chip_select")->withBoolParameters("value", value);
+}
