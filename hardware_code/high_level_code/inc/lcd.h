@@ -6,6 +6,10 @@
 #define LCD_NUM_ROWS (2U)
 #define LCD_NUM_COLS (20U)
 
+/**
+ * @brief Initialize the LCD.
+ * 
+ */
 void init_lcd(void);
 
 /**
