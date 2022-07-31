@@ -5,6 +5,12 @@
 #include <stdint.h>
 
 /**
+ * @brief Initializes the SPI handle and other information required
+ * 
+ */
+void init_hal_ads130b04(void);
+
+/**
  * @brief cycles the sync reset pin on the ADS130B04. Pull low to reset.
  *  
  * @param value level to set sync reset pin

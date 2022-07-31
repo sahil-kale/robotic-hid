@@ -17,3 +17,8 @@ void assert_chip_select(bool value)
 {
     mock_c()->actualCall("assert_chip_select")->withBoolParameters("value", value);
 }
+
+void init_hal_ads130b04(void)
+{
+    mock_c()->actualCall("init_hal_ads130b04");
+}
