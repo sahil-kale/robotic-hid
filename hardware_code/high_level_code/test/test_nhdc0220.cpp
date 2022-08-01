@@ -32,7 +32,6 @@ TEST(nhdc0220_test, command_func_test)
     uint8_t expected_data[] = {0x00, 0x12};
     mock_c()->expectOneCall("nhdc0220_i2c_write")
     ->withUnsignedIntParameters("address", LCD_I2C_ADDR)
-    ->withBoolParameters("write", true)
     ->withMemoryBufferParameter("data", expected_data, sizeof(expected_data));
 
 
@@ -51,7 +50,6 @@ TEST(nhdc0220_test, write_lcd)
     memcpy(expected_data + 1, test_data, sizeof(test_data));
     mock_c()->expectOneCall("nhdc0220_i2c_write")
     ->withUnsignedIntParameters("address", LCD_I2C_ADDR)
-    ->withBoolParameters("write", true)
     ->withMemoryBufferParameter("data", expected_data, sizeof(expected_data));
     
     write_lcd(test_data, sizeof(test_data));
@@ -66,7 +64,6 @@ TEST(nhdc0220_test, set_lcd_cursor_test)
     uint8_t expected_data[] = {0x00, 0x80+0x40+2};
     mock_c()->expectOneCall("nhdc0220_i2c_write")
     ->withUnsignedIntParameters("address", LCD_I2C_ADDR)
-    ->withBoolParameters("write", true)
     ->withMemoryBufferParameter("data", expected_data, sizeof(expected_data));
 
     set_lcd_cursor(test_row, test_col);
@@ -78,7 +75,6 @@ TEST(nhdc0220_test, clear_lcd_test)
     uint8_t expected_data[] = {0x00, 0x01};
     mock_c()->expectOneCall("nhdc0220_i2c_write")
     ->withUnsignedIntParameters("address", LCD_I2C_ADDR)
-    ->withBoolParameters("write", true)
     ->withMemoryBufferParameter("data", expected_data, sizeof(expected_data));
 
     clear_lcd();

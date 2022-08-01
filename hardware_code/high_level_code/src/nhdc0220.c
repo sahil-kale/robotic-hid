@@ -4,6 +4,7 @@
 #include "hal_nhdc0220.h"
 #include <stddef.h>
 #include <string.h> //for memcpy
+#include <stdlib.h> //for malloc
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-const-variable"
@@ -33,6 +34,13 @@ static const uint8_t dram_line_offsets[] = { 0x00, 0x40 };
 void init_lcd(void)
 {
     hal_nhdc0220_init();
+
+    //clear display
+    nhdc0220_command(INSTR_DISP_CLEAR);
+
+    //Turn the display on with entire display and cursor off
+    nhdc0220_command(INSTR_DISP_ON | (1 << FLAG_POS_INSTR_DISP_ON_WITH_ENTIRE_DISPLAY));
+
 }
 
 void write_lcd(char *string, size_t length)
@@ -50,7 +58,7 @@ void write_lcd(char *string, size_t length)
     //Copy string to array
     memcpy(data + 1, string, length);
     //Write array to LCD
-    nhdc0220_i2c_write(LCD_ADDR, true, data, length+1);
+    nhdc0220_i2c_write(LCD_ADDR, data, length+1);
 
     //Free array
     free(data);
@@ -70,7 +78,7 @@ void set_lcd_backlight(uint8_t brightness)
 
 void set_lcd_contrast(uint8_t contrast)
 {
-    return; //not implemented
+    return;
 }
 
 void nhdc0220_command(uint8_t val)
@@ -79,7 +87,7 @@ void nhdc0220_command(uint8_t val)
 
     data[0] = CONTROL_BYTE_CMD;
     data[1] = val;
-    nhdc0220_i2c_write(LCD_ADDR, true, data, sizeof(data));
+    nhdc0220_i2c_write(LCD_ADDR, data, sizeof(data));
 }
 
 void set_lcd_cursor(uint8_t row, uint8_t col)

@@ -9,4 +9,6 @@
  */
 void nhdc0220_command(uint8_t val);
 
+
+
 #endif //NHDC0220_H
