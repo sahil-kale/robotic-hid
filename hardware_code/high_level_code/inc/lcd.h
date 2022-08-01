@@ -20,7 +20,7 @@ void init_lcd(void);
  * @param length The length of the string to write to the LCD
  * @param line The line to write the string to
  */
-void write_lcd(char *string, size_t length, uint8_t line);
+void write_lcd(char *string, size_t length);
 
 /**
  * @brief Clear the LCD screen
@@ -41,5 +41,13 @@ void set_lcd_backlight(uint8_t brightness);
  * @param contrast 
  */
 void set_lcd_contrast(uint8_t contrast);
+
+/**
+ * @brief Set the lcd cursor position
+ * 
+ * @param row 
+ * @param col 
+ */
+void set_lcd_cursor(uint8_t row, uint8_t col);
 
 #endif //LCD_H

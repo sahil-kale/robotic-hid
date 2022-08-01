@@ -4,6 +4,10 @@
 #include "hal_nhdc0220.h"
 #include <stddef.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-const-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 //Note: Driver inspired by https://github.com/metodn/ArduProjects/blob/master/i2c_lcd_small/ST7036.cpp
 
 static const uint8_t LCD_ADDR = 0x78;
@@ -21,15 +25,19 @@ static const uint8_t INSTR_SET_DRAM_ADDR = 0x80;
 //Array for line offsets, 1st line starts at 0x00, 2nd line starts at 0x40
 static const uint8_t dram_line_offsets[] = { 0x00, 0x40 };
 
-
 void init_lcd(void)
 {
     hal_nhdc0220_init();
 }
 
-void write_lcd(char *string, size_t length, uint8_t line)
+void write_lcd(char *string, size_t length)
 {
+    //Begin I2C transaction
+    nhdc0220_i2c_beginTransmission(LCD_ADDR, true);
+    static const uint8_t instr_set_dram_addr = INSTR_SET_DRAM_ADDR;
 
+
+    nhdc0220_i2c_endTransmission();
 }
 
 void clear_lcd(void)
@@ -57,5 +65,15 @@ void nhdc0220_command(uint8_t val)
     nhdc0220_i2c_write(data, sizeof(data));
     nhdc0220_i2c_endTransmission();
 }
+
+void set_lcd_cursor(uint8_t row, uint8_t col)
+{
+    uint8_t instr = INSTR_SET_DRAM_ADDR;
+    instr |= dram_line_offsets[row];
+    instr |= col;
+    nhdc0220_command(instr);
+}
+
+#pragma GCC diagnostic pop
 
 #endif // USE_NHDC0220
