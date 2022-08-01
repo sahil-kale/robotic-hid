@@ -1,6 +1,7 @@
 #ifndef LCD_H
 #define LCD_H
 #include <stdint.h>
+#include <stddef.h>
 
 #define USE_NHDC0220
 #define LCD_NUM_ROWS (2U)
