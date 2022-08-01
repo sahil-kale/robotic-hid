@@ -22,6 +22,10 @@ void nhdc0220_i2c_beginTransmission(uint8_t address, bool write);
  */
 void nhdc0220_i2c_write(uint8_t data[], uint8_t len);
 
+/**
+ * @brief Ends an I2C transaction from beginTransmission
+ * 
+ */
 void nhdc0220_i2c_endTransmission(void);
 
 #endif //HAL_NHDC0220_H
