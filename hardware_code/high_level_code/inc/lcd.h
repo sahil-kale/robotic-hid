@@ -18,7 +18,7 @@ void init_lcd(void);
  * 
  * @param string The string to write to the LCD
  * @param length The length of the string to write to the LCD
- * @param line The line to write the string to
+ * @note this assumes that the cursor has been set appropriately.
  */
 void write_lcd(char *string, size_t length);
 
