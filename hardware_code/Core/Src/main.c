@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "adc.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,7 +92,11 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  init_adc();
+  init_lcd();
+  set_lcd_cursor(1,2);
+  char testArray[] = "Test";
+
+  write_lcd(testArray, sizeof(testArray));
 
   /* USER CODE END 2 */
 
@@ -100,8 +104,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  volatile adc_data_t data = {0};
-	  data = get_adc_data();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -1,6 +1,8 @@
 #MicroXplorer Configuration settings - do not modify
 File.Version=6
 GPIO.groupedBy=
+I2C1.ClockSpeed=100000
+I2C1.IPParameters=ClockSpeed
 KeepUserPlacement=false
 Mcu.CPN=STM32L151CBT6
 Mcu.Family=STM32L1
