@@ -93,8 +93,8 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   init_lcd();
-  set_lcd_cursor(0,0);
-  char testArray[] = "Hello World!";
+  set_lcd_cursor(1,2);
+  char testArray[] = "Test";
 
   write_lcd(testArray, sizeof(testArray));
 
