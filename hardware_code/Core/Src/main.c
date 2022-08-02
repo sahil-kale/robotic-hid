@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lcd.h"
+#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,8 +94,8 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   init_lcd();
-  set_lcd_cursor(1,2);
-  char testArray[] = "Test";
+  set_lcd_cursor(0,2);
+  char testArray[] = "Woah!";
 
   write_lcd(testArray, sizeof(testArray));
 
