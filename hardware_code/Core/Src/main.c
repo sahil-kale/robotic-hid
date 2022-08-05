@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "lcd.h"
 #include "adc.h"
+#include "usbd_hid.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE END PV */
 
@@ -77,6 +79,17 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  struct gameHID_t {
+  		      int8_t JoyX; 		// 1 byte, 8 bits are the buttons : 0 or 1
+  		      int8_t JoyY; 		// 1 byte, 8 bits are the buttons : 0 or 1
+  		      uint8_t JoyB1; 	// Button, bit 0
+  		  };
+  		  struct gameHID_t gameHID;
+  		  gameHID.JoyX = 0;
+  		  gameHID.JoyY = 0;
+  		  gameHID.JoyB1 = 0;
+
+  		  int8_t counter1=0;
 
   /* USER CODE END Init */
 
@@ -94,8 +107,8 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   init_lcd();
-  set_lcd_cursor(0,2);
-  char testArray[] = "Woah!";
+  set_lcd_cursor(1,1);
+  char testArray[] = "USB HID test in progress";
 
   write_lcd(testArray, sizeof(testArray));
 
@@ -105,6 +118,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // Send HID report
+	 counter1=(counter1+1)%32-127; // faking X,Y and button values
+	 gameHID.JoyX = counter1*2;
+	 gameHID.JoyY = counter1*4;
+	 gameHID.JoyB1 = ~gameHID.JoyB1; //
+	 USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &gameHID, sizeof(struct gameHID_t));
+	 HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

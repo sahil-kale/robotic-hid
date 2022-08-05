@@ -158,7 +158,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
   0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x04,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -208,7 +208,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgHSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
   0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x04,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -258,7 +258,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_OtherSpeedCfgDesc[USB_HID_CONFIG_DESC_SIZ]
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
   0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x04,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -317,52 +317,32 @@ __ALIGN_BEGIN static uint8_t USBD_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
 
 __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE]  __ALIGN_END =
 {
-  0x05,   0x01,
-  0x09,   0x02,
-  0xA1,   0x01,
-  0x09,   0x01,
+		0x05, 0x01, // Usage Page ( Generic Desktop controls)
+		0x09, 0x04, // Usage (Joystick)
+		0xA1, 0x01, // Collection (Application)
+			0xA1, 0x02, // Collection (Logical)
+			 0x05, 0x01, // Usage Page (Generic Ctrls)
+			 0x09, 0x30, // Usage X
+			 0x09, 0x31, // Usage Y
+			 0x15, 0x81, // Logical Minimum (-127)
+			 0x25, 0x7F, // Logical Maximum (127)
+			 0x75, 0x08, // Report Size (8) -> 8 bits (1 byte value)
+			 0x95, 0x02, // Report Count (2) -> 2x = 2 bytes -> no bit stuffing
+			 0x81, 0x02, // Input (Data,Var,Abs,...)
+			 0x05, 0x09, // Usage Page (Button)
+			 0x09, 0x01, // Usage Button1
+			 0x15, 0x00, // Logical Minimum (0)
+			 0x25, 0x01, // Logical Maximum (1)
+			 0x75, 0x01, // Report Size (1) -> 1 bit
+			 0x95, 0x01, // Report Count (1) -> 1 value : need to stuff 7 more bits
+			 0x81, 0x02, // Input (Data,Var,Abs...)
+			 0x75, 0x07, // Report Size (7) -> 7 bit
+		     0x95, 0x01, // Report Count (1) -> 1 value  7 bits for byte alignment
+			 0x81, 0x03, // Input (Const,Var,Abs,,,,,)
+			0xC0, // end collection Logical
 
-  0xA1,   0x00,
-  0x05,   0x09,
-  0x19,   0x01,
-  0x29,   0x03,
-
-  0x15,   0x00,
-  0x25,   0x01,
-  0x95,   0x03,
-  0x75,   0x01,
-
-  0x81,   0x02,
-  0x95,   0x01,
-  0x75,   0x05,
-  0x81,   0x01,
-
-  0x05,   0x01,
-  0x09,   0x30,
-  0x09,   0x31,
-  0x09,   0x38,
-
-  0x15,   0x81,
-  0x25,   0x7F,
-  0x75,   0x08,
-  0x95,   0x03,
-
-  0x81,   0x06,
-  0xC0,   0x09,
-  0x3c,   0x05,
-  0xff,   0x09,
-
-  0x01,   0x15,
-  0x00,   0x25,
-  0x01,   0x75,
-  0x01,   0x95,
-
-  0x02,   0xb1,
-  0x22,   0x75,
-  0x06,   0x95,
-  0x01,   0xb1,
-
-  0x01,   0xc0
+		   0xC0, // End Collection =>  46 bytes
+		         // Report 2 bytes signed for XY and 1byte unsigned for button info bit-0
 };
 
 /**
