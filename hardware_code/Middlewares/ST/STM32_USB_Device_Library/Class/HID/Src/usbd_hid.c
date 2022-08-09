@@ -342,7 +342,7 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE]  _
 	    0x75, 0x04,                    //     REPORT_SIZE (4)
 	    0x95, 0x01,                    //     REPORT_COUNT (1)
 	    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
-	    0xc0,                          //     END_COLLECTION
+	    0xc0,                          //   END_COLLECTION
 	    0xc0                           // END_COLLECTION
 };
 
