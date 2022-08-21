@@ -1,9 +1,30 @@
-#include "joystick.h"
-#include "usbd_hid.h"
+#include "application.h"
+#include "hal_usb.h"
 
-extern USBD_HandleTypeDef hUsbDeviceFS;
+//Static Game HId inststnace for LCD to update
+static Game_HID_t lcd_data = {0};
+
+//Create HID report task loop:
+void joystick_task(void const * argument)
+{
+    while(1)
+    {
+
+    }
+}
+
+//Create LCD update task loop
+void lcd_task(void const * argument)
+{
+    while(1)
+    {
+        
+    }
+}
+
+
 
 void send_joystick_report(const gameHID_t *report)
 {
-    USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*)report, sizeof(gameHID_t));
+    send_usb_hid_report((uint8_t *)report, sizeof(gameHID_t));
 }
