@@ -4,6 +4,9 @@
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
+const uint8_t num_buttons = 4;
+const uint8_t button_bitmask = 0b00001111;
+
 #define GPIO_SW_1_PORT GPIOB
 #define GPIO_SW_1_PIN GPIO_PIN_8
 #define GPIO_SW_2_PORT GPIOB

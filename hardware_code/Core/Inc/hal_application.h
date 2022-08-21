@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+extern const uint8_t num_buttons;
+extern const uint8_t button_bitmask;
+
 typedef struct {
     uint8_t manipulating_button_state;
     bool lcd_button_left;

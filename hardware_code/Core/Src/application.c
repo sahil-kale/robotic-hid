@@ -5,6 +5,7 @@
 #include "cmsis_os2.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 static void send_joystick_report(const gameHID_t *report);
 static void buttonlogic(void);
@@ -72,7 +73,7 @@ static void buttonlogic(void)
         enter_button_down = true;
     }
 
-	hid_data.Buttons = button_state.manipulating_button_state & 0b00001111;
+	hid_data.Buttons = button_state.manipulating_button_state & button_bitmask;
 }
 
 //Create LCD update task loop
@@ -112,13 +113,24 @@ void lcd_task(void const * argument)
                     uint8_t unused = 0;
                     (void)unused;
                 }
-                uint16_t button_states_binary = 0;
-                //Byte by byte, add each button state to button_states
-                for(int i = 0; i < 4; i++)
+
+                char button_text[] = "Buttons:";
+                sprintf(line_one_buffer, "%s", button_text);
+
+                //Append to line one buffer the binary representation of the buttons
+                for(size_t i = 0; i < num_buttons; i++)
                 {
-                    button_states_binary += (hid_data.Buttons >> i) & 0b00000001;
+                    if(hid_data.Buttons & (1 << i))
+                    {
+                        line_one_buffer[i + sizeof(button_text) + 2] = '1';
+                    }
+                    else
+                    {
+                        line_one_buffer[i + sizeof(button_text) + 2] = '0';
+                    }
                 }
-                sprintf(line_one_buffer, "Buttons: %d", button_states_binary);
+
+                
                 sprintf(line_two_buffer, "Sys Operational");
                 break;
             case LCD_PAGE_INFO:
@@ -132,10 +144,11 @@ void lcd_task(void const * argument)
         }
 
         set_lcd_cursor(0,0);
+        set_lcd_cursor(0,0);
         write_lcd(line_one_buffer, sizeof(line_one_buffer));
         set_lcd_cursor(1,0);
         write_lcd(line_two_buffer, sizeof(line_two_buffer));
-        osDelay(100); //10Hz
+        osDelay(200); //5Hz
     }
 }
 
