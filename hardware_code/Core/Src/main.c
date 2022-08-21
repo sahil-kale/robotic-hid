@@ -97,9 +97,6 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, 1);
-  HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, 0);
-
   init_adc();
   init_lcd();
   set_lcd_cursor(0,0);
@@ -122,10 +119,10 @@ int main(void)
     adc_data = get_adc_data();
 
     //Scale ADC value from -16384 to 16384 to -127 to 127:
-    gameHID.JoyLX = (int8_t)(adc_data.adc_data[0]/128);
-    gameHID.JoyLY = (int8_t)(adc_data.adc_data[1]/128);
-    gameHID.JoyRX = (int8_t)(adc_data.adc_data[2]/128);
-    gameHID.JoyRY = (int8_t)(adc_data.adc_data[3]/128);
+    gameHID.JoyLX = (int8_t)(adc_data.adc_data[0]/256);
+    gameHID.JoyLY = (int8_t)(adc_data.adc_data[1]/256);
+    gameHID.JoyRX = (int8_t)(adc_data.adc_data[2]/256);
+    gameHID.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
 	 gameHID.Buttons = counter1 & 0b00001111;
 	 send_joystick_report(&gameHID);
 	 

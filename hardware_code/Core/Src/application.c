@@ -2,7 +2,7 @@
 #include "hal_usb.h"
 
 //Static Game HId inststnace for LCD to update
-static Game_HID_t lcd_data = {0};
+static gameHID_t most_recent_hid_data = {0};
 
 //Create HID report task loop:
 void joystick_task(void const * argument)
