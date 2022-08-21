@@ -60,7 +60,7 @@ adc_data_t get_adc_data(void)
         //Initaite a SPI transfer with empty buffer as tx
         ads130b04_spi_transfer(empty_buffer, working_buffer, ADS130B04_SPI_WORD_SIZE_BYTES);
         //Copy the ADC data, which is made up of the 1st 16 bits of working_buffer, into the appropriate channel
-        data.adc_data[i] = working_buffer[1] | (working_buffer[0] << 8);
+        data.adc_data[i] = (int16_t)(working_buffer[1] | (working_buffer[0] << 8)) * 2;
     }
 
     //CRC call

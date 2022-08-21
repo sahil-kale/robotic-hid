@@ -19,16 +19,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "i2c.h"
 #include "spi.h"
 #include "usb_device.h"
 #include "gpio.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd.h"
-#include "adc.h"
-#include "joystick.h"
+#include "application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +53,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -80,7 +81,7 @@ int main(void)
   /* USER CODE BEGIN Init */
 
 
-  int8_t counter1=0;
+
 
   /* USER CODE END Init */
 
@@ -95,41 +96,47 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
-  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, 1);
-  HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, 0);
 
-  init_adc();
-  init_lcd();
-  set_lcd_cursor(0,0);
-  char testArray[] = "USB HID test in progress";
-
-  write_lcd(testArray, sizeof(testArray));
-  set_lcd_cursor(1,1);
-  char testArray2[] = "USB connected";
-  write_lcd(testArray2, sizeof(testArray2));
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+
+  //Using CMSIS FreeRTOS API to create tasks for joystick and LCD update:
+  //Thread attributes: priority, stack size, and task function
+  
+  //Ignore Wincompatible-pointer-types warning
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+
+
+  osThreadAttr_t joystick_thread_attr = {
+    .name = "Joystick",
+    .priority = (osPriority_t)40,
+    .stack_size = 512
+  };
+  osThreadNew(joystick_task, NULL, &joystick_thread_attr);\
+  
+  osThreadAttr_t lcd_thread_attr = {
+    .name = "LCD",
+    .priority = (osPriority_t)20,
+    .stack_size = 512
+  };
+
+  osThreadNew(lcd_task, NULL, &lcd_thread_attr);
+  #pragma GCC diagnostic pop
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    gameHID_t gameHID;
-    //Get ADC report:
-    adc_data_t adc_data;
-    adc_data = get_adc_data();
-
-    //Scale ADC value from -16384 to 16384 to -127 to 127:
-    gameHID.JoyLX = (int8_t)(adc_data.adc_data[0]/128);
-    gameHID.JoyLY = (int8_t)(adc_data.adc_data[1]/128);
-    gameHID.JoyRX = (int8_t)(adc_data.adc_data[2]/128);
-    gameHID.JoyRY = (int8_t)(adc_data.adc_data[3]/128);
-	 gameHID.Buttons = counter1 & 0b00001111;
-	 send_joystick_report(&gameHID);
-	 
-	 HAL_Delay(5);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -182,6 +189,27 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM2 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM2) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
