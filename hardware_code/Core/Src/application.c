@@ -94,6 +94,8 @@ void lcd_task(void const * argument)
     while(1)
     {
         clear_lcd();
+        memset(line_one_buffer, 0, sizeof(line_one_buffer));
+        memset(line_two_buffer, 0, sizeof(line_two_buffer));
         //Update LCD with joystick data from HID report using sprintf to populate buffers
 
         //Switch case statement for LCD pages
