@@ -80,7 +80,7 @@ int main(void)
   /* USER CODE BEGIN Init */
 
 
-  int8_t counter1=0;
+
 
   /* USER CODE END Init */
 
@@ -113,19 +113,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    gameHID_t gameHID;
-    //Get ADC report:
-    adc_data_t adc_data;
-    adc_data = get_adc_data();
 
-    //Scale ADC value from -16384 to 16384 to -127 to 127:
-    gameHID.JoyLX = (int8_t)(adc_data.adc_data[0]/256);
-    gameHID.JoyLY = (int8_t)(adc_data.adc_data[1]/256);
-    gameHID.JoyRX = (int8_t)(adc_data.adc_data[2]/256);
-    gameHID.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
-	 gameHID.Buttons = counter1 & 0b00001111;
-	 send_joystick_report(&gameHID);
-	 
+	 joystick_task(NULL);
 	 HAL_Delay(5);
     /* USER CODE END WHILE */
 
