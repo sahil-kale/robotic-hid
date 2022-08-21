@@ -28,8 +28,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd.h"
-#include "adc.h"
 #include "application.h"
 /* USER CODE END Includes */
 
@@ -99,14 +97,7 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  init_lcd();
-  set_lcd_cursor(0,0);
-  char testArray[] = "USB HID test in progress";
 
-  write_lcd(testArray, sizeof(testArray));
-  set_lcd_cursor(1,1);
-  char testArray2[] = "USB connected";
-  write_lcd(testArray2, sizeof(testArray2));
 
   /* USER CODE END 2 */
 
@@ -119,9 +110,17 @@ int main(void)
   osThreadAttr_t joystick_thread_attr = {
     .name = "Joystick",
     .priority = (osPriority_t)40,
-    .stack_size = 1024
+    .stack_size = 512
   };
-  osThreadNew(joystick_task, NULL, &joystick_thread_attr);
+  osThreadNew(joystick_task, NULL, &joystick_thread_attr);\
+  
+  osThreadAttr_t lcd_thread_attr = {
+    .name = "LCD",
+    .priority = (osPriority_t)20,
+    .stack_size = 512
+  };
+
+  osThreadNew(lcd_task, NULL, &lcd_thread_attr);
 
   /* Start scheduler */
   osKernelStart();
@@ -131,9 +130,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-
-	 HAL_Delay(5);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

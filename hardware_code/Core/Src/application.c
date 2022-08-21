@@ -2,9 +2,15 @@
 #include "adc.h"
 #include "hal_usb.h"
 #include "cmsis_os2.h"
+#include <stdbool.h>
+
+static void send_joystick_report(const gameHID_t *report);
 
 //Static Game HId inststnace for LCD to update
 static gameHID_t hid_data = {0};
+
+static bool left_button_down = false;
+static bool right_button_down = false;
 
 //Create HID report task loop:
 void joystick_task(void const * argument)
@@ -21,6 +27,9 @@ void joystick_task(void const * argument)
     hid_data.JoyLY = (int8_t)(adc_data.adc_data[1]/256);
     hid_data.JoyRX = (int8_t)(adc_data.adc_data[2]/256);
     hid_data.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
+
+    //Sample Buttons:
+
 	//hid_data.Buttons = counter1 & 0b00001111;
 	send_joystick_report(&hid_data);
     osDelay(5); //200Hz
@@ -30,15 +39,20 @@ void joystick_task(void const * argument)
 //Create LCD update task loop
 void lcd_task(void const * argument)
 {
+    init_lcd();
+    set_lcd_cursor(0,0);
+    char testArray[] = "Starting...";
+    write_lcd(testArray, sizeof(testArray));
     while(1)
     {
-        
+
+        osDelay(100); //10Hz
     }
 }
 
 
 
-void send_joystick_report(const gameHID_t *report)
+static void send_joystick_report(const gameHID_t *report)
 {
     send_usb_hid_report((uint8_t *)report, sizeof(gameHID_t));
 }

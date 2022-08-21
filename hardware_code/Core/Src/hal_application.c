@@ -1,4 +1,4 @@
-#include "hal_usb.h"
+#include "hal_application.h"
 #include "usbd_hid.h"
 
 extern USBD_HandleTypeDef hUsbDeviceFS;

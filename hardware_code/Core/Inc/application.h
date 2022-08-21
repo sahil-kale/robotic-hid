@@ -10,7 +10,7 @@ typedef struct gameHID {
   	uint8_t Buttons; //Only lower 4 bits are used
 } gameHID_t;
 
-void send_joystick_report(const gameHID_t *report);
 void joystick_task(void const * argument);
+void lcd_task(void const * argument);
 
 #endif // JOYSTICK_H
