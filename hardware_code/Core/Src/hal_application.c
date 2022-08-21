@@ -32,10 +32,10 @@ hal_application_button_state_t update_button_states(void)
 {
     //Poll the button states
     hal_application_button_state_t button_state = {0};
-    button_state.manipulating_button_state |= HAL_GPIO_ReadPin(GPIO_SW_1_PORT, GPIO_SW_1_PIN) << 0;
-    button_state.manipulating_button_state |= HAL_GPIO_ReadPin(GPIO_SW_2_PORT, GPIO_SW_2_PIN) << 1;
-    button_state.manipulating_button_state |= HAL_GPIO_ReadPin(GPIO_SW_3_PORT, GPIO_SW_3_PIN) << 2;
-    button_state.manipulating_button_state |= HAL_GPIO_ReadPin(GPIO_SW_4_PORT, GPIO_SW_4_PIN) << 3;
+    button_state.manipulating_button_state |= !(HAL_GPIO_ReadPin(GPIO_SW_1_PORT, GPIO_SW_1_PIN)) << 0;
+    button_state.manipulating_button_state |= !(HAL_GPIO_ReadPin(GPIO_SW_2_PORT, GPIO_SW_2_PIN)) << 1;
+    button_state.manipulating_button_state |= !(HAL_GPIO_ReadPin(GPIO_SW_3_PORT, GPIO_SW_3_PIN)) << 2;
+    button_state.manipulating_button_state |= !(HAL_GPIO_ReadPin(GPIO_SW_4_PORT, GPIO_SW_4_PIN)) << 3;
 
     button_state.lcd_button_left = HAL_GPIO_ReadPin(GPIO_USERLEFT_PORT, GPIO_USERLEFT_PIN);
     button_state.lcd_button_right = HAL_GPIO_ReadPin(GPIO_USERRIGHT_PORT, GPIO_USERRIGHT_PIN);
