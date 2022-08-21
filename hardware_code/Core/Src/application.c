@@ -12,8 +12,7 @@ static void buttonlogic(void);
 //Static Game HId inststnace for LCD to update
 static gameHID_t hid_data = {0};
 
-static bool left_button_down = false;
-static bool right_button_down = false;
+static LCD_PAGES_E lcd_page = LCD_PAGE_AXIS;
 static bool enter_button_down = false;
 
 //Create HID report task loop:
@@ -46,12 +45,26 @@ static void buttonlogic(void)
     //Set left and right button requests
     if(button_state.lcd_button_left)
     {
-        left_button_down = true;
+        if(lcd_page != 0)
+        {
+            lcd_page--;
+        }
+        else
+        {
+            lcd_page = LCD_PAGES_MAX - 1;
+        }
     }
 
     if(button_state.lcd_button_right)
     {
-        right_button_down = true;
+        if(lcd_page != LCD_PAGES_MAX - 1)
+        {
+            lcd_page++;
+        }
+        else
+        {
+            lcd_page = 0;
+        }
     }
 
     if(button_state.lcd_button_enter)
@@ -67,17 +80,55 @@ void lcd_task(void const * argument)
 {
     init_lcd();
     set_lcd_cursor(0,0);
-    char testArray[] = "Starting...";
-    write_lcd(testArray, sizeof(testArray));
+    char testArray1[] = "Initializing...";
+    write_lcd(testArray1, sizeof(testArray1));
+    set_lcd_cursor(1,0);
+    char testArray2[] = "Sahil Kale 2022";
+    write_lcd(testArray2, sizeof(testArray2));
+    osDelay(2000);
+    
     
     static char line_one_buffer[20] = {0};
     static char line_two_buffer[20] = {0};
     
     while(1)
     {
+        clear_lcd();
         //Update LCD with joystick data from HID report using sprintf to populate buffers
-        sprintf(line_one_buffer, "LX/LY: %d/%d", hid_data.JoyLX, hid_data.JoyLY);
-        sprintf(line_two_buffer, "RX/RY: %d/%d", hid_data.JoyRX, hid_data.JoyRY);
+
+        //Switch case statement for LCD pages
+        switch(lcd_page)
+        {
+            case LCD_PAGE_AXIS:
+                sprintf(line_one_buffer, "LX|LY: %d | %d", hid_data.JoyLX, hid_data.JoyLY);
+                sprintf(line_two_buffer, "RX|RY: %d | %d", hid_data.JoyRX, hid_data.JoyRY);
+                break;
+            case LCD_PAGE_BUTTONS:
+                //Avoid statement situation
+                if(false)
+                {
+                    uint8_t unused = 0;
+                    (void)unused;
+                }
+                uint16_t button_states_binary = 0;
+                //Byte by byte, add each button state to button_states
+                for(int i = 0; i < 4; i++)
+                {
+                    button_states_binary += (hid_data.Buttons >> i) & 0b00000001;
+                }
+                sprintf(line_one_buffer, "Buttons: %d", button_states_binary);
+                sprintf(line_two_buffer, "Sys Operational");
+                break;
+            case LCD_PAGE_INFO:
+                sprintf(line_one_buffer, "Robotic HID");
+                sprintf(line_two_buffer, "Sahil Kale 2022");
+                break;
+            default:
+                sprintf(line_one_buffer, "UNKNOWN ERR!");
+                sprintf(line_two_buffer, "Discontinue use!");
+                break;
+        }
+
         set_lcd_cursor(0,0);
         write_lcd(line_one_buffer, sizeof(line_one_buffer));
         set_lcd_cursor(1,0);
