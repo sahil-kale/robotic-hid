@@ -79,7 +79,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
 
 
 
@@ -102,8 +103,7 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+
 
   //Using CMSIS FreeRTOS API to create tasks for joystick and LCD update:
   //Thread attributes: priority, stack size, and task function
