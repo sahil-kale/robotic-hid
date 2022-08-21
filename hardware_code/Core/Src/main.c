@@ -107,6 +107,12 @@ int main(void)
 
   //Using CMSIS FreeRTOS API to create tasks for joystick and LCD update:
   //Thread attributes: priority, stack size, and task function
+  
+  //Ignore Wincompatible-pointer-types warning
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+
+
   osThreadAttr_t joystick_thread_attr = {
     .name = "Joystick",
     .priority = (osPriority_t)40,
@@ -121,6 +127,7 @@ int main(void)
   };
 
   osThreadNew(lcd_task, NULL, &lcd_thread_attr);
+  #pragma GCC diagnostic pop
 
   /* Start scheduler */
   osKernelStart();

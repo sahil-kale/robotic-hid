@@ -1,6 +1,7 @@
 #include "application.h"
 #include "adc.h"
-#include "hal_usb.h"
+#include "lcd.h"
+#include "hal_application.h"
 #include "cmsis_os2.h"
 #include <stdbool.h>
 
@@ -9,8 +10,8 @@ static void send_joystick_report(const gameHID_t *report);
 //Static Game HId inststnace for LCD to update
 static gameHID_t hid_data = {0};
 
-static bool left_button_down = false;
-static bool right_button_down = false;
+//static bool left_button_down = false;
+//static bool right_button_down = false;
 
 //Create HID report task loop:
 void joystick_task(void const * argument)
@@ -29,8 +30,9 @@ void joystick_task(void const * argument)
     hid_data.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
 
     //Sample Buttons:
+    hal_application_button_state_t button_state = update_button_states();
 
-	//hid_data.Buttons = counter1 & 0b00001111;
+	hid_data.Buttons = button_state.manipulating_button_state & 0b00001111;
 	send_joystick_report(&hid_data);
     osDelay(5); //200Hz
     }
