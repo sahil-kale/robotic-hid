@@ -1,6 +1,7 @@
 #include "application.h"
 #include "adc.h"
 #include "hal_usb.h"
+#include "cmsis_os2.h"
 
 //Static Game HId inststnace for LCD to update
 static gameHID_t hid_data = {0};
@@ -8,8 +9,9 @@ static gameHID_t hid_data = {0};
 //Create HID report task loop:
 void joystick_task(void const * argument)
 {
-    //while(1)
-    //{
+    init_adc();
+    while(1)
+    {
     //Get ADC report:
     adc_data_t adc_data;
     adc_data = get_adc_data();
@@ -21,8 +23,8 @@ void joystick_task(void const * argument)
     hid_data.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
 	//hid_data.Buttons = counter1 & 0b00001111;
 	send_joystick_report(&hid_data);
-
-    //}
+    osDelay(5); //200Hz
+    }
 }
 
 //Create LCD update task loop
