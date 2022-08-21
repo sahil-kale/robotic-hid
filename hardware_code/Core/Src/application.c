@@ -129,9 +129,6 @@ void lcd_task(void const * argument)
                 sprintf(line_one_buffer + 10, "LY: %d", hid_data.JoyLY);
                 sprintf(line_two_buffer, "RX: %d", hid_data.JoyRX);
                 sprintf(line_two_buffer + 10, "RY: %d", hid_data.JoyRY);
-
-                //sprintf(line_one_buffer, "LX|LY: %d | %d", hid_data.JoyLX, hid_data.JoyLY);
-                //sprintf(line_two_buffer, "RX|RY: %d | %d", hid_data.JoyRX, hid_data.JoyRY);
                 break;
             case LCD_PAGE_BUTTONS:
                 //Avoid statement situation
