@@ -140,26 +140,26 @@ TEST(dfu_tests, dfu_process_data_packet_correctly)
 //Test that DFU packet goes into complete mode when it reaches data size
 
 //test to ensure that DFU invalid packet type is handled correctly when in wrong state (this case, it will be in start and sent a data packet)
-// TEST(dfu_tests, dfu_process_packet_wrong_state)
-// {
-//     //Set DFU state struct to 0 using memset
-//     memset(&dfu_state, 0, sizeof(dfu_state));
-//     dfu_state.state = DFU_STATE_START;
-//     packet_dfu_header_t test_packet_header;
-//     uint8_t test_data[300] = {0};
-//     test_packet_header.SOF = DFU_SOF_identifier;
-//     test_packet_header.packet_type = DFU_PACKET_DATA;
-//     test_packet_header.payload_length = swap_uint16(sizeof(test_data));
-//     //Copy into test packet
-//     uint8_t test_packet[sizeof(packet_dfu_header_t) + sizeof(test_data)] = {0};
-//     std::memcpy(test_packet, &test_packet_header, sizeof(packet_dfu_header_t));
-//     std::memcpy(test_packet + sizeof(packet_dfu_header_t), test_data, sizeof(test_data));
+TEST(dfu_tests, dfu_process_packet_wrong_state)
+{
+    //Set DFU state struct to 0 using memset
+    memset(&dfu_state, 0, sizeof(dfu_state));
+    dfu_state.state = DFU_STATE_START;
+    packet_dfu_header_t test_packet_header;
+    uint8_t test_data[300] = {0};
+    test_packet_header.SOF = DFU_SOF_identifier;
+    test_packet_header.packet_type = DFU_PACKET_DATA;
+    test_packet_header.payload_length = swap_uint16(sizeof(test_data));
+    //Copy into test packet
+    uint8_t test_packet[sizeof(packet_dfu_header_t) + sizeof(test_data)] = {0};
+    std::memcpy(test_packet, &test_packet_header, sizeof(packet_dfu_header_t));
+    std::memcpy(test_packet + sizeof(packet_dfu_header_t), test_data, sizeof(test_data));
 
-//     DFU_STATUS_E returnState = dfu_process_packet((uint8_t *)test_packet);
-//     CHECK_EQUAL(DFU_STATUS_ERROR_INVALID_STATE_PACKET_RX, returnState);
-//     CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
+    DFU_STATUS_E returnState = dfu_process_packet((uint8_t *)test_packet);
+    CHECK_EQUAL(DFU_STATUS_ERROR_INVALID_STATE_PACKET_RX, returnState);
+    CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
 
-// }
+}
 
 TEST(dfu_tests, dfu_start_pkt_received_in_wrong_state)
 {

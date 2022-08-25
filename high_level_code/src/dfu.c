@@ -89,6 +89,13 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
             break;
 
         case DFU_PACKET_DATA:
+            //Check if we are in data exchange state
+            if(dfu_state.state != DFU_STATE_DATA_EXCHANGE)
+            {
+                status = DFU_STATUS_ERROR_INVALID_STATE_PACKET_RX;
+                break;
+            }
+
             status = hal_dfu_writeflash(APP_START_ADDRESS+dfu_state.bytes_sent, packet_header->payload_length, payload);
             if(status == DFU_STATUS_OK)
             {
