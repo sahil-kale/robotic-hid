@@ -8,6 +8,7 @@
 //Disable Wconversion warning
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 
 
 DFU_STATE_INFORMATION_T dfu_state;
@@ -61,11 +62,11 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
     {
         case DFU_PACKET_START:
             //Check if we are in start state
-            if(dfu_state.state != DFU_STATE_START)
-            {
-                status = DFU_STATUS_ERROR_INVALID_STATE;
-                break;
-            }
+             if(dfu_state.state != DFU_STATE_START)
+             {
+                 status = DFU_STATUS_ERROR_INVALID_STATE_PACKET_RX;
+                 break;
+             }
 
             //Create pointer to program information
             packet_dfu_prog_info_t *prog_info = (packet_dfu_prog_info_t *)payload;
@@ -86,12 +87,22 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
             dfu_state.state = DFU_STATE_DATA_EXCHANGE;
 
             break;
+
+        case DFU_PACKET_DATA:
+            status = hal_dfu_writeflash(APP_START_ADDRESS+dfu_state.bytes_sent, packet_header->payload_length, payload);
+            if(status == DFU_STATUS_OK)
+            {
+                dfu_state.bytes_sent += packet_header->payload_length;
+                status = dfu_ack(packet_header->payload_length);
+            }
+            break;
+
         default:
             status = DFU_STATUS_ERROR_INVALID_PACKET_TYPE;
 
     }
 
-    dfu_assert_error(status);
+    (void)dfu_assert_error(status);
     return status;
 }
 
