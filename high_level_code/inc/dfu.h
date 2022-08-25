@@ -9,8 +9,6 @@
 #define PACKED __attribute__((packed))
 #endif
 
-extern DFU_STATE_E dfu_state;
-
 typedef enum
 {
     DFU_STATE_START,
@@ -56,6 +54,8 @@ typedef struct PACKED
     uint8_t packet_type;
     uint16_t data_length_received;
 } packet_dfu_ack_t;
+
+extern DFU_STATE_E dfu_state;
 
 DFU_STATUS_E dfu_init(void);
 DFU_STATUS_E dfu_run(void);
