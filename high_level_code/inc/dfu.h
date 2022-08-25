@@ -3,6 +3,14 @@
 #define ENABLE_OTA_DFU
 #include "stdint.h"
 
+#ifdef UNITTEST
+#define PACKED 
+#else
+#define PACKED __attribute__((packed))
+#endif
+
+extern DFU_STATE_E dfu_state;
+
 typedef enum
 {
     DFU_STATE_START,
@@ -27,26 +35,32 @@ typedef enum
     DFU_PACKET_ACK
 } DFU_PACKET_TYPE_E;
 
-typedef struct __attribute__((__packed__))
+typedef struct PACKED
 {
     uint8_t SOF;
-    uint8_t packet_type;
+    DFU_PACKET_TYPE_E packet_type;
     uint16_t data_length;
     uint8_t* data;
 } packet_dfu_t;
 
-typedef struct __attribute__((__packed__)) 
+typedef struct PACKED
 {
     uint32_t prog_size;
     uint32_t data_size;
     uint8_t reserved[4];
 } packet_dfu_prog_info_t;
 
-typedef struct __attribute__((__packed__))
+typedef struct PACKED
 {
     uint8_t SOF;
     uint8_t packet_type;
     uint16_t data_length_received;
 } packet_dfu_ack_t;
+
+DFU_STATUS_E dfu_init(void);
+DFU_STATUS_E dfu_run(void);
+
+DFU_STATUS_E dfu_ack(uint16_t data_len);
+DFU_STATUS_E dfu_process_packet(packet_dfu_t* packet);
 
 #endif // DFU_H
