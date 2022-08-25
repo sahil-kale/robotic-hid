@@ -21,3 +21,15 @@ DFU_STATUS_E send_data_to_dfu_host(DFU_data_handle_t data)
     mock_c()->actualCall("send_data_to_dfu_host")->withUnsignedLongIntParameters("size", data.size)->withMemoryBufferParameter("data", data.data, data.size);
     return mock_c()->returnValue().value.unsignedIntValue;
 }
+
+DFU_STATE_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors)
+{
+    mock_c()->actualCall("hal_dfu_eraseflash")->withUnsignedIntParameters("baseSector", baseSector)->withUnsignedIntParameters("noSectors", noSectors);
+    return mock_c()->returnValue().value.unsignedIntValue;
+}
+
+DFU_STATUS_E hal_dfu_writeflash(uint32_t address, uint32_t size, const uint8_t *data)
+{
+    mock_c()->actualCall("hal_dfu_writeflash")->withUnsignedIntParameters("address", address)->withUnsignedIntParameters("size", size)->withMemoryBufferParameter("data", data, size);
+    return mock_c()->returnValue().value.unsignedIntValue;
+}

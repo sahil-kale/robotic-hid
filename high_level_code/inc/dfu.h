@@ -10,6 +10,8 @@
 #define PACKED __attribute__((packed))
 #endif
 
+extern const uint8_t DFU_SOF_identifier;
+
 typedef enum DFU_STATE
 {
     DFU_STATE_IDLE = 0,
@@ -28,6 +30,15 @@ typedef enum DFU_STATUS
     DFU_STATUS_UNKNOWN_ERROR
 } DFU_STATUS_E;
 
+typedef struct DFU_STATE_INFORMATION
+{
+    DFU_STATE_E state;
+    uint32_t address;
+    uint32_t prog_size;
+    uint32_t bytes_sent;
+    uint32_t prog_crc;
+} DFU_STATE_INFORMATION_T;
+
 typedef enum DFU_PACKET_TYPE
 {
     DFU_PACKET_START,
@@ -45,11 +56,11 @@ typedef struct PACKED packet_dfu_header
 typedef struct PACKED packet_dfu_prog_info
 {
     uint32_t prog_size;
-    uint32_t data_size;
+    uint32_t prog_crc;
     uint8_t reserved[4];
 } packet_dfu_prog_info_t;
 
-extern DFU_STATE_E dfu_state;
+extern DFU_STATE_INFORMATION_T dfu_state;
 
 /**
  * @brief Initialize the DFU module.
