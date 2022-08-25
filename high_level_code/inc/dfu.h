@@ -38,8 +38,7 @@ typedef struct PACKED
     uint8_t SOF;
     DFU_PACKET_TYPE_E packet_type;
     uint16_t data_length;
-    uint8_t* data;
-} packet_dfu_t;
+} packet_dfu_header_t;
 
 typedef struct PACKED
 {
@@ -61,6 +60,6 @@ DFU_STATUS_E dfu_init(void);
 DFU_STATUS_E dfu_run(void);
 
 DFU_STATUS_E dfu_ack(uint16_t data_len);
-DFU_STATUS_E dfu_process_packet(packet_dfu_t* packet);
+DFU_STATUS_E dfu_process_packet(packet_dfu_header_t* packet);
 
 #endif // DFU_H

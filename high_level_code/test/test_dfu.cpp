@@ -23,7 +23,7 @@ TEST_GROUP(dfu_tests){
 //create a test for that test group
 TEST (dfu_tests, dfu_ack_check){
     uint16_t test_data_len = 500; //in hex, 0x0150
-    uint8_t compare_buffer[] = {0x01, DFU_PACKET_DATA, 0x01, 0xF4};
+    uint8_t compare_buffer[] = {0x01, DFU_PACKET_ACK, 0x01, 0xF4};
 
     mock_c()->expectOneCall("send_data_to_dfu_host")->withUnsignedLongIntParameters("size", sizeof(compare_buffer))->withMemoryBufferParameter("data", compare_buffer, sizeof(compare_buffer));
 
