@@ -10,7 +10,7 @@
 #define PACKED __attribute__((packed))
 #endif
 
-typedef enum
+typedef enum DFU_STATE
 {
     DFU_STATE_IDLE = 0,
     DFU_STATE_START,
@@ -19,7 +19,7 @@ typedef enum
     DFU_STATE_ERROR
 } DFU_STATE_E;
 
-typedef enum
+typedef enum DFU_STATUS
 {
     DFU_STATUS_OK,
     DFU_STATUS_ERROR,
@@ -28,33 +28,26 @@ typedef enum
     DFU_STATUS_UNKNOWN_ERROR
 } DFU_STATUS_E;
 
-typedef enum
+typedef enum DFU_PACKET_TYPE
 {
     DFU_PACKET_START,
     DFU_PACKET_DATA,
     DFU_PACKET_ACK
 } DFU_PACKET_TYPE_E;
 
-typedef struct PACKED
+typedef struct PACKED packet_dfu_header
 {
     uint8_t SOF;
-    DFU_PACKET_TYPE_E packet_type;
+    uint8_t packet_type;
     uint16_t data_length;
 } packet_dfu_header_t;
 
-typedef struct PACKED
+typedef struct PACKED packet_dfu_prog_info
 {
     uint32_t prog_size;
     uint32_t data_size;
     uint8_t reserved[4];
 } packet_dfu_prog_info_t;
-
-typedef struct PACKED
-{
-    uint8_t SOF;
-    uint8_t packet_type;
-    uint16_t data_length_received;
-} packet_dfu_ack_t;
 
 extern DFU_STATE_E dfu_state;
 

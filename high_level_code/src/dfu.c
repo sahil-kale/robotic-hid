@@ -23,11 +23,16 @@ DFU_STATUS_E dfu_ack(uint16_t data_len)
     uint8_t data_len_be[2];
     data_len_be[0] = (data_len & 0xFF00) >> 8;
     data_len_be[1] = data_len & 0xFF;
-    uint8_t ack_message[] = {SOF_identifier, DFU_PACKET_ACK, data_len_be[0], data_len_be[1]};
+
+    packet_dfu_header_t packet_header;
+    packet_header.SOF = SOF_identifier;
+    packet_header.packet_type = DFU_PACKET_ACK;
+    packet_header.data_length = data_len_be[0] + data_len_be[1]*256;
+
 
     DFU_data_handle_t ack_data;
-    ack_data.data = ack_message;
-    ack_data.size = sizeof(ack_message);
+    ack_data.data = (uint8_t *)(&packet_header);
+    ack_data.size = sizeof(packet_header);
 
     return send_data_to_dfu_host(ack_data);
 }

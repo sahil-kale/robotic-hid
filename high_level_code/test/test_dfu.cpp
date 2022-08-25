@@ -45,4 +45,17 @@ TEST(dfu_tests, dfu_assert_test)
     
 }
 
-//Test the DFU packet handle function
+//Test the DFU packet handle function when presented with a start packet
+TEST(dfu_tests, dfu_process_start_packet)
+{
+    // dfu_state = DFU_STATE_START;
+    // const uint16_t test_data_length = 512;
+    // packet_dfu_header_t test_packet_header;
+    // test_packet_header.packet_type = DFU_PACKET_START;
+    // test_packet_header.data_length = test_data_length;
+    // uint8_t test_packet[sizeof(packet_dfu_header_t) + test_data_length] = {0};
+
+
+    //dfu_process_packet()
+
+}
