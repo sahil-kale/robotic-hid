@@ -26,10 +26,10 @@ void joystick_task(void const * argument)
     adc_data = get_adc_data();
 
     //Scale ADC value from -16384 to 16384 to -127 to 127:
-    hid_data.JoyLX = (int8_t)(adc_data.adc_data[0]/256);
-    hid_data.JoyLY = (int8_t)(adc_data.adc_data[1]/256);
-    hid_data.JoyRX = (int8_t)(adc_data.adc_data[2]/256);
-    hid_data.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
+    hid_data.JoyLX = (int8_t)((adc_data.adc_data[0]*2)/256);
+    hid_data.JoyLY = (int8_t)((adc_data.adc_data[1]*2)/256);
+    hid_data.JoyRX = (int8_t)((adc_data.adc_data[2]*2)/256);
+    hid_data.JoyRY = (int8_t)((adc_data.adc_data[3]*2)/256);
 
     buttonlogic();
 

@@ -27,29 +27,22 @@ typedef enum
     DFU_PACKET_ACK
 } DFU_PACKET_TYPE_E;
 
-typedef struct {
+typedef struct __attribute__((__packed__))
+{
+    uint8_t SOF;
+    uint8_t packet_type;
+    uint16_t data_length;
+    uint8_t* data;
+} packet_dfu_t;
+
+typedef struct __attribute__((__packed__)) 
+{
     uint32_t prog_size;
     uint32_t data_size;
     uint8_t reserved[4];
 } packet_dfu_prog_info_t;
 
-typedef struct
-{
-    uint8_t SOF;
-    uint8_t packet_type;
-    uint16_t data_length;
-    packet_dfu_prog_info_t prog_info;
-} packet_dfu_start_t;
-
-typedef struct
-{
-    uint8_t SOF;
-    uint8_t packet_type;
-    uint16_t data_length;
-    uint8_t data[];
-} packet_dfu_data_t;
-
-typedef struct
+typedef struct __attribute__((__packed__))
 {
     uint8_t SOF;
     uint8_t packet_type;
