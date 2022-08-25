@@ -49,4 +49,6 @@ DFU_STATUS_E hal_dfu_writeflash(uint32_t address, uint32_t size, const uint8_t *
  */
 DFU_STATE_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors);
 
+bool hal_dfu_validate_crc(uint32_t address, uint32_t size, uint32_t crc);
+
 #endif // HAL_DFU_H

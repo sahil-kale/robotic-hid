@@ -106,12 +106,26 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
             if(dfu_state.bytes_sent == dfu_state.prog_size)
             {
                 dfu_state.state = DFU_STATE_VALIDATE;
+
+                //For simplicity, Validate state is included in the data exchange state in here as it only occurs once in the context of DFU
+
+                if(hal_dfu_validate_crc(APP_START_ADDRESS, dfu_state.prog_size, dfu_state.prog_crc))
+                {
+                    status = DFU_STATUS_OK;
+                    dfu_state.state = DFU_STATE_COMPLETE;
+                }
+                else
+                {
+                    status = DFU_STATUS_ERROR_CRC_FAILED;
+                }
+
             }
 
             break;
 
         default:
             status = DFU_STATUS_ERROR_INVALID_PACKET_TYPE;
+            break;
 
     }
 

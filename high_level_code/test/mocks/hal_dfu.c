@@ -33,3 +33,9 @@ DFU_STATUS_E hal_dfu_writeflash(uint32_t address, uint32_t size, const uint8_t *
     mock_c()->actualCall("hal_dfu_writeflash")->withUnsignedIntParameters("address", address)->withUnsignedIntParameters("size", size)->withMemoryBufferParameter("data", data, size);
     return mock_c()->returnValue().value.unsignedIntValue;
 }
+
+bool hal_dfu_validate_crc(uint32_t address, uint32_t size, uint32_t crc)
+{
+    mock_c()->actualCall("hal_dfu_validate_crc")->withUnsignedIntParameters("address", address)->withUnsignedIntParameters("size", size)->withUnsignedIntParameters("crc", crc);
+    return mock_c()->returnValue().value.boolValue;
+}
