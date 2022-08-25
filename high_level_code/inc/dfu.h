@@ -2,6 +2,7 @@
 #define DFU_H
 #define ENABLE_OTA_DFU
 #include "stdint.h"
+#include "stdbool.h"
 
 #ifdef UNITTEST
 #define PACKED 
@@ -11,6 +12,7 @@
 
 typedef enum
 {
+    DFU_STATE_IDLE = 0,
     DFU_STATE_START,
     DFU_STATE_DATA_EXCHANGE,
     DFU_STATE_COMPLETE,
@@ -56,10 +58,42 @@ typedef struct PACKED
 
 extern DFU_STATE_E dfu_state;
 
+/**
+ * @brief Initialize the DFU module.
+ * 
+ * @return DFU_STATUS_E 
+ */
 DFU_STATUS_E dfu_init(void);
+
+/**
+ * @brief Runs the DFU state machine.
+ * 
+ * @return DFU_STATUS_E 
+ */
 DFU_STATUS_E dfu_run(void);
 
+/**
+ * @brief Acknowledges the last packet received from the DFU host.
+ * 
+ * @param data_len length of the last packet received from the DFU host.
+ * @return DFU_STATUS_E 
+ */
 DFU_STATUS_E dfu_ack(uint16_t data_len);
-DFU_STATUS_E dfu_process_packet(packet_dfu_header_t* packet);
+
+/**
+ * @brief Processes the incoming DFU packet and stores required information
+ * 
+ * @param packet Header of the DFU packet
+ * @return DFU_STATUS_E 
+ */
+DFU_STATUS_E dfu_process_packet(uint8_t* packet);
+
+/**
+ * @brief DFU assert error is responsible for moving DFU into error state
+ * 
+ * @param status status to assert
+ * @return if the status is not DFU_STATUS_OK, then the DFU state is set to DFU_STATE_ERROR and the function returns true. Otherwise, the function returns false.
+ */
+bool dfu_assert_error(DFU_STATUS_E status);
 
 #endif // DFU_H

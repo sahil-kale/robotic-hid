@@ -30,3 +30,17 @@ TEST (dfu_tests, dfu_ack_check){
     dfu_ack(test_data_len);
 }
 
+//Test the DFU assert function that moves it to the DFU error state
+TEST(dfu_tests, dfu_assert_test)
+{
+    dfu_state = DFU_STATE_START;
+    bool value = dfu_assert_error(DFU_STATUS_OK);
+    CHECK_EQUAL(DFU_STATE_START, dfu_state);
+    CHECK_EQUAL(false, value);
+
+    //Now, check what happens in the event of an error
+    value = dfu_assert_error(DFU_STATUS_ERROR);
+    CHECK_EQUAL(true, value);
+    CHECK_EQUAL(DFU_STATE_ERROR, dfu_state);
+    
+}
