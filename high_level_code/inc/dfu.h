@@ -10,8 +10,6 @@
 #define PACKED __attribute__((packed))
 #endif
 
-extern const uint8_t DFU_SOF_identifier;
-
 typedef enum DFU_STATE
 {
     DFU_STATE_IDLE = 0,
@@ -27,6 +25,8 @@ typedef enum DFU_STATUS
     DFU_STATUS_ERROR,
     DFU_STATUS_TIMEOUT,
     DFU_STATUS_INVALID_PARAMETER,
+    DFU_STATUS_ERROR_INVALID_STATE,
+    DFU_STATUS_ERROR_INVALID_PACKET_TYPE,
     DFU_STATUS_UNKNOWN_ERROR
 } DFU_STATUS_E;
 
@@ -50,7 +50,7 @@ typedef struct PACKED packet_dfu_header
 {
     uint8_t SOF;
     uint8_t packet_type;
-    uint16_t data_length;
+    uint16_t payload_length;
 } packet_dfu_header_t;
 
 typedef struct PACKED packet_dfu_prog_info
@@ -79,10 +79,10 @@ DFU_STATUS_E dfu_run(void);
 /**
  * @brief Acknowledges the last packet received from the DFU host.
  * 
- * @param data_len length of the last packet received from the DFU host.
+ * @param payload_len length of the last packet received from the DFU host.
  * @return DFU_STATUS_E 
  */
-DFU_STATUS_E dfu_ack(uint16_t data_len);
+DFU_STATUS_E dfu_ack(uint16_t payload_len);
 
 /**
  * @brief Processes the incoming DFU packet and stores required information

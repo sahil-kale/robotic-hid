@@ -3,12 +3,13 @@
 #ifdef ENABLE_OTA_DFU
 #include "string.h"
 #include "utility.h"
+#include "common.h"
 
 //Disable Wconversion warning
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 
-const uint8_t DFU_SOF_identifier = 0x01;
+
 DFU_STATE_INFORMATION_T dfu_state;
 
 DFU_STATUS_E dfu_init(void)
@@ -23,13 +24,13 @@ DFU_STATUS_E dfu_init(void)
     return status;
 }
 
-DFU_STATUS_E dfu_ack(uint16_t data_len)
+DFU_STATUS_E dfu_ack(uint16_t payload_len)
 {
 
     packet_dfu_header_t packet_header;
     packet_header.SOF = DFU_SOF_identifier;
     packet_header.packet_type = DFU_PACKET_ACK;
-    packet_header.data_length = swap_uint16(data_len);
+    packet_header.payload_length = swap_uint16(payload_len);
 
 
     DFU_data_handle_t ack_data;
@@ -47,6 +48,51 @@ bool dfu_assert_error(DFU_STATUS_E status)
     }
 
     return (status != DFU_STATUS_OK);
+}
+
+DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
+{
+    packet_dfu_header_t *packet_header = (packet_dfu_header_t *)buffer;
+    packet_header->payload_length = swap_uint16(packet_header->payload_length);
+    uint8_t *payload = buffer + sizeof(packet_dfu_header_t);
+
+    DFU_STATUS_E status = DFU_STATUS_OK;
+    switch(packet_header->packet_type)
+    {
+        case DFU_PACKET_START:
+            //Check if we are in start state
+            if(dfu_state.state != DFU_STATE_START)
+            {
+                status = DFU_STATUS_ERROR_INVALID_STATE;
+                break;
+            }
+
+            //Create pointer to program information
+            packet_dfu_prog_info_t *prog_info = (packet_dfu_prog_info_t *)payload;
+            prog_info->prog_size = swap_uint32(prog_info->prog_size);
+            prog_info->prog_crc = swap_uint32(prog_info->prog_crc);
+
+            //Update the master dfu struct
+            dfu_state.prog_size = prog_info->prog_size;
+            dfu_state.prog_crc = prog_info->prog_crc;
+            dfu_state.bytes_sent = 0;
+
+            //Erase flash
+            status = hal_dfu_eraseflash(APP_SECTOR_START, APP_SECTOR_END - APP_SECTOR_START + 1);
+
+
+            //Send ACK
+            status = dfu_ack(packet_header->payload_length);
+            dfu_state.state = DFU_STATE_DATA_EXCHANGE;
+
+            break;
+        default:
+            status = DFU_STATUS_ERROR_INVALID_PACKET_TYPE;
+
+    }
+
+    dfu_assert_error(status);
+    return status;
 }
 
 #pragma GCC diagnostic pop
