@@ -44,3 +44,5 @@ TEST(dfu_tests, dfu_assert_test)
     CHECK_EQUAL(DFU_STATE_ERROR, dfu_state);
     
 }
+
+//Test the DFU packet handle function
