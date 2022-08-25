@@ -120,7 +120,7 @@ TEST(dfu_tests, dfu_process_data_packet_correctly)
     std::memcpy(test_packet + sizeof(packet_dfu_header_t), test_data, sizeof(test_data));
 
     //Expect flash to be written
-    mock_c()->expectOneCall("hal_dfu_writeflash")->withUnsignedLongIntParameters("address", APP_START_ADDRESS + 731)->withUnsignedLongIntParameters("size", sizeof(test_data))->withMemoryBufferParameter("data", test_data, sizeof(test_data));
+    mock_c()->expectOneCall("hal_dfu_writeflash")->withUnsignedLongIntParameters("address", APP_START_ADDRESS + dfu_state.bytes_sent)->withUnsignedLongIntParameters("size", sizeof(test_data))->withMemoryBufferParameter("data", test_data, sizeof(test_data));
 
 
     //Expect acknowledgement to be sent
@@ -138,6 +138,39 @@ TEST(dfu_tests, dfu_process_data_packet_correctly)
 }
 
 //Test that DFU packet goes into complete mode when it reaches data size
+TEST(dfu_tests, dfu_process_packet_state_change_when_complete)
+{
+    memset(&dfu_state, 0, sizeof(dfu_state));
+    dfu_state.state = DFU_STATE_DATA_EXCHANGE;
+    dfu_state.bytes_sent = 0x00001000;
+    dfu_state.prog_size = 0x000010BC;
+    dfu_state.prog_crc = 0x12345678;
+
+    uint8_t test_data[0xBC] = {0};
+
+    packet_dfu_header_t test_packet_header;
+    test_packet_header.SOF = DFU_SOF_identifier;
+    test_packet_header.packet_type = DFU_PACKET_DATA;
+    test_packet_header.payload_length = swap_uint16(sizeof(test_data));
+    //Copy into test packet
+    uint8_t test_packet[sizeof(packet_dfu_header_t) + sizeof(test_data)] = {0};
+    std::memcpy(test_packet, &test_packet_header, sizeof(packet_dfu_header_t));
+    std::memcpy(test_packet + sizeof(packet_dfu_header_t), test_data, sizeof(test_data));
+    //Expect flash to be written
+    mock_c()->expectOneCall("hal_dfu_writeflash")->withUnsignedLongIntParameters("address", APP_START_ADDRESS + dfu_state.bytes_sent)->withUnsignedLongIntParameters("size", sizeof(test_data))->withMemoryBufferParameter("data", test_data, sizeof(test_data));
+    //Expect acknowledgement to be sent
+    uint8_t ack_buffer[4] = {0x01, DFU_PACKET_ACK, 0x00, 0x00};
+    //Append payload length to the end of ack_buffer
+    ack_buffer[2] = test_packet_header.payload_length & 0xFF;
+    ack_buffer[3] = test_packet_header.payload_length >> 8;
+    mock_c()->expectOneCall("send_data_to_dfu_host")->withUnsignedIntParameters("size", sizeof(packet_dfu_header_t))->withMemoryBufferParameter("data", ack_buffer, sizeof(ack_buffer));
+    
+    DFU_STATUS_E returnState = dfu_process_packet((uint8_t *)test_packet);
+    CHECK_EQUAL(DFU_STATE_VALIDATE, dfu_state.state);
+    CHECK_EQUAL(0x000010BC, dfu_state.bytes_sent);
+    CHECK_EQUAL(DFU_STATUS_OK, returnState);
+
+}
 
 //test to ensure that DFU invalid packet type is handled correctly when in wrong state (this case, it will be in start and sent a data packet)
 TEST(dfu_tests, dfu_process_packet_wrong_state)

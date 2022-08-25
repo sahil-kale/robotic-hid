@@ -102,6 +102,12 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
                 dfu_state.bytes_sent += packet_header->payload_length;
                 status = dfu_ack(packet_header->payload_length);
             }
+
+            if(dfu_state.bytes_sent == dfu_state.prog_size)
+            {
+                dfu_state.state = DFU_STATE_VALIDATE;
+            }
+
             break;
 
         default:
