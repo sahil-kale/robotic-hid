@@ -259,5 +259,14 @@ TEST(dfu_tests, dfu_start_pkt_received_in_wrong_state)
 }
 
 //Test to ensure process packet throws invalid error when presented with a wrongly-typed data packet type
+TEST(dfu_tests, dfu_packet_invalid_type)
+{
+    memset(&dfu_state, 0, sizeof(dfu_state));
+    dfu_state.state = DFU_STATE_START;
+    uint8_t test_packet[10] = {0x01, 0xFE, 0x00, 0x00}; //0xFE is not a valid packet type
+    DFU_STATUS_E returnState = dfu_process_packet(test_packet);
+    CHECK_EQUAL(DFU_STATUS_ERROR_INVALID_PACKET_TYPE, returnState);
+    CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
+}
 
 #pragma GCC diagnostic pop

@@ -72,7 +72,7 @@ extern DFU_STATE_INFORMATION_T dfu_state;
 DFU_STATUS_E dfu_init(void);
 
 /**
- * @brief Runs the DFU state machine.
+ * @brief Runs the DFU state machine, iters only once. Implement in a loop that blocks until the state machine reaches COMPLETED or ERROR.
  * 
  * @return DFU_STATUS_E 
  */

@@ -17,7 +17,7 @@ DFU_STATUS_E dfu_init(void)
 {
     //Set all of DFU state to 0
     memset(&dfu_state, 0, sizeof(DFU_STATE_INFORMATION_T));
-    dfu_state.state = DFU_STATE_IDLE;
+    dfu_state.state = DFU_STATE_START;
 
     DFU_STATUS_E status = DFU_STATUS_OK;
     status = hal_dfu_init();
