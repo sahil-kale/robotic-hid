@@ -10,8 +10,20 @@ typedef enum bootloader_state
     BOOTLOADER_STATE_HALT,
 } bootloader_state_E;
 
+extern bootloader_state_E bootloader_current_state;
+
+
+/**
+ * @brief Determines the appropriate bootloader state from the reset vector
+ * 
+ * @return bootloader_state_E 
+ */
 bootloader_state_E determine_bootloader_state_from_reset_vector(void);
 
+/**
+ * @brief Runs the bootloader application. Call in own while loop.
+ * 
+ */
 void bootloader_app_run(void);
 
 

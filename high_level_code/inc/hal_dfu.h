@@ -1,6 +1,7 @@
 #ifndef HAL_DFU_H
 #define HAL_DFU_H
 #include <stdint.h>
+#include "dfu.h"
 
 typedef struct
 {
