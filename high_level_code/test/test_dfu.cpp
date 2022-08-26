@@ -273,6 +273,7 @@ TEST(dfu_tests, dfu_packet_invalid_type)
 /**** STATE MACHINE TESTS ****/
 TEST(dfu_tests, dfu_state_machine_stalls_on_host_timeout)
 {
+    dfu_time_last_received = 0;
     mock_c()->ignoreOtherCalls();
     
     //Set DFU state struct to 0 using memset
@@ -287,22 +288,47 @@ TEST(dfu_tests, dfu_state_machine_stalls_on_host_timeout)
     mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(12); //Inital Call
     mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(25);
     mock_c()->expectOneCall("get_data_from_dfu_host")->andReturnPointerValue(&empty_data);
-    mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(DFU_TIMEOUT_START + 12 + 1); //Timeout
+    mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(DFU_TIMEOUT_START + 200); //Timeout
     mock_c()->expectOneCall("get_data_from_dfu_host")->andReturnPointerValue(&empty_data);
-
-    //Expect a call to be made to get packet from host
 
     DFU_STATUS_E status = dfu_run();
     CHECK_EQUAL(DFU_STATE_START, dfu_state.state);
-
-    //Expect a call to gettick to be made
     
-    
-
     status = dfu_run();
     CHECK_EQUAL(DFU_STATUS_ERROR_HOST_TIMEOUT, status);
     CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
 
+}
+
+//Ensure that a timeout error is thrown when the host sends a packet that is not of bootloader type (i.e. not consisting of the SOF)
+TEST(dfu_tests, dfu_state_machine_timesout_on_incorrect_packet)
+{
+    dfu_time_last_received = 0;
+    mock_c()->ignoreOtherCalls();
+    
+    //Set DFU state struct to 0 using memset
+    memset(&dfu_state, 0, sizeof(dfu_state));
+    dfu_state.state = DFU_STATE_START;
+
+    uint8_t bad_data_buf[] = {0x02, 0x05, 0x00, 0x04};
+
+    DFU_data_handle_t bad_data;
+    bad_data.data = bad_data_buf;
+    bad_data.size = sizeof(bad_data_buf);
+
+    //Expect a call to gettick to be made
+    mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(12); //Inital Call
+    mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(25);
+    mock_c()->expectOneCall("get_data_from_dfu_host")->andReturnPointerValue(&bad_data);
+    mock_c()->expectOneCall("hal_dfu_gettick")->andReturnUnsignedIntValue(DFU_TIMEOUT_START + 12 + 1); //Timeout
+    mock_c()->expectOneCall("get_data_from_dfu_host")->andReturnPointerValue(&bad_data);
+
+    DFU_STATUS_E status = dfu_run();
+    CHECK_EQUAL(DFU_STATE_START, dfu_state.state);
+
+    status = dfu_run();
+    CHECK_EQUAL(DFU_STATUS_ERROR_HOST_TIMEOUT, status);
+    CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
 }
 
 #pragma GCC diagnostic pop

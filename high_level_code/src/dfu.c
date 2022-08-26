@@ -4,6 +4,7 @@
 #include "string.h"
 #include "utility.h"
 #include "common.h"
+#include "stdio.h"
 
 //Disable Wconversion warning
 #pragma GCC diagnostic push
@@ -52,43 +53,49 @@ bool dfu_assert_error(DFU_STATUS_E status)
     return (status != DFU_STATUS_OK);
 }
 
+uint32_t dfu_time_last_received = 0;
+
 DFU_STATUS_E dfu_run()
 {
-    static uint32_t start_tick = 0;
-    if(start_tick == 0)
+    DFU_STATUS_E status = DFU_STATUS_OK;
+
+    if(dfu_time_last_received == 0)
     {
-        start_tick = hal_dfu_gettick();
+        dfu_time_last_received = hal_dfu_gettick();
     }
 
-    DFU_STATUS_E status = DFU_STATUS_OK;
-    switch(dfu_state.state)
+    DFU_data_handle_t data = get_data_from_dfu_host();
+    bool is_data_valid = false;
+    if(data.size != 0 && data.data != NULL && data.data[0] == DFU_SOF_identifier)
     {
-        case DFU_STATE_START:;
+        is_data_valid = true;
+        dfu_time_last_received = hal_dfu_gettick();
+        switch(dfu_state.state)
+        {
+            
+            case DFU_STATE_START:;
+                break;
 
-            DFU_data_handle_t data = get_data_from_dfu_host();
-            if(data.size != 0 && data.data != NULL)
-            {
-                //Do something with the data
-            }
-            else if(hal_dfu_gettick() > start_tick + DFU_TIMEOUT_START)
-            {
-                status = DFU_STATUS_ERROR_HOST_TIMEOUT;
-            }
 
-            break;
+            case DFU_STATE_DATA_EXCHANGE:;
+                break;
 
-        case DFU_STATE_DATA_EXCHANGE:;
-            break;
+            case DFU_STATE_COMPLETE:;
+                break;
 
-        case DFU_STATE_COMPLETE:;
-            break;
+            case DFU_STATE_ERROR:;
+                break;
+            
+            default:
+                break;
 
-        case DFU_STATE_ERROR:;
-            break;
-        
-        default:
-            break;
+        }   
+    }
 
+    uint32_t current_time = hal_dfu_gettick();
+    if((current_time > dfu_time_last_received + DFU_TIMEOUT_START) && !(is_data_valid))
+    {
+        status = DFU_STATUS_ERROR_HOST_TIMEOUT;
     }
     
     dfu_assert_error(status);

@@ -62,6 +62,7 @@ typedef struct PACKED packet_dfu_prog_info
 
 extern DFU_STATE_INFORMATION_T dfu_state;
 extern const uint32_t DFU_TIMEOUT_START;
+extern uint32_t dfu_time_last_received;
 
 /**
  * @brief Initialize the DFU module.
