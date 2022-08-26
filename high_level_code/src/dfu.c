@@ -12,6 +12,7 @@
 
 
 DFU_STATE_INFORMATION_T dfu_state;
+const uint32_t DFU_TIMEOUT_START = 30000;
 
 DFU_STATUS_E dfu_init(void)
 {
@@ -49,6 +50,49 @@ bool dfu_assert_error(DFU_STATUS_E status)
     }
 
     return (status != DFU_STATUS_OK);
+}
+
+DFU_STATUS_E dfu_run()
+{
+    static uint32_t start_tick = 0;
+    if(start_tick == 0)
+    {
+        start_tick = hal_dfu_gettick();
+    }
+
+    DFU_STATUS_E status = DFU_STATUS_OK;
+    switch(dfu_state.state)
+    {
+        case DFU_STATE_START:;
+
+            DFU_data_handle_t data = get_data_from_dfu_host();
+            if(data.size != 0 && data.data != NULL)
+            {
+                //Do something with the data
+            }
+            else if(hal_dfu_gettick() > start_tick + DFU_TIMEOUT_START)
+            {
+                status = DFU_STATUS_ERROR_HOST_TIMEOUT;
+            }
+
+            break;
+
+        case DFU_STATE_DATA_EXCHANGE:;
+            break;
+
+        case DFU_STATE_COMPLETE:;
+            break;
+
+        case DFU_STATE_ERROR:;
+            break;
+        
+        default:
+            break;
+
+    }
+    
+    dfu_assert_error(status);
+    return status;
 }
 
 DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
@@ -105,8 +149,6 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
 
             if(dfu_state.bytes_sent == dfu_state.prog_size)
             {
-                dfu_state.state = DFU_STATE_VALIDATE;
-
                 //For simplicity, Validate state is included in the data exchange state in here as it only occurs once in the context of DFU
 
                 if(hal_dfu_validate_crc(APP_START_ADDRESS, dfu_state.prog_size, dfu_state.prog_crc))

@@ -12,10 +12,8 @@
 
 typedef enum DFU_STATE
 {
-    DFU_STATE_IDLE = 0,
     DFU_STATE_START,
     DFU_STATE_DATA_EXCHANGE,
-    DFU_STATE_VALIDATE,
     DFU_STATE_COMPLETE,
     DFU_STATE_ERROR
 } DFU_STATE_E;
@@ -24,8 +22,8 @@ typedef enum DFU_STATUS
 {
     DFU_STATUS_OK,
     DFU_STATUS_ERROR,
-    DFU_STATUS_TIMEOUT,
     DFU_STATUS_INVALID_PARAMETER,
+    DFU_STATUS_ERROR_HOST_TIMEOUT,
     DFU_STATUS_ERROR_INVALID_STATE_PACKET_RX,
     DFU_STATUS_ERROR_INVALID_PACKET_TYPE,
     DFU_STATUS_ERROR_CRC_FAILED,
@@ -63,6 +61,7 @@ typedef struct PACKED packet_dfu_prog_info
 } packet_dfu_prog_info_t;
 
 extern DFU_STATE_INFORMATION_T dfu_state;
+extern const uint32_t DFU_TIMEOUT_START;
 
 /**
  * @brief Initialize the DFU module.

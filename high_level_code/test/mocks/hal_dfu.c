@@ -39,3 +39,14 @@ bool hal_dfu_validate_crc(uint32_t address, uint32_t size, uint32_t crc)
     mock_c()->actualCall("hal_dfu_validate_crc")->withUnsignedIntParameters("address", address)->withUnsignedIntParameters("size", size)->withUnsignedIntParameters("crc", crc);
     return mock_c()->returnValue().value.boolValue;
 }
+
+uint32_t hal_dfu_gettick()
+{
+    mock_c()->actualCall("hal_dfu_gettick");
+    return mock_c()->returnValue().value.unsignedIntValue;
+}
+
+void hal_dfu_reset(void)
+{
+    mock_c()->actualCall("hal_dfu_reset");
+}

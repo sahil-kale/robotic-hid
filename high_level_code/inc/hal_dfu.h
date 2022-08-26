@@ -51,4 +51,19 @@ DFU_STATE_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors);
 
 bool hal_dfu_validate_crc(uint32_t address, uint32_t size, uint32_t crc);
 
+/**
+ * @brief Get a tick count
+ * 
+ * @return uint32_t current system tick time. Note that the timeout is adjustable based on ticks
+ */
+uint32_t hal_dfu_gettick(void);
+
+/**
+ * @brief Reset the system
+ * 
+ * @note This function is intended to call the systems reset handler - use with caution.
+ * 
+ */
+void hal_dfu_reset(void);
+
 #endif // HAL_DFU_H
