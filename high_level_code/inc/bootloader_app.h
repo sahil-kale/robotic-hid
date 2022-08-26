@@ -10,6 +10,12 @@ typedef enum bootloader_state
     BOOTLOADER_STATE_HALT,
 } bootloader_state_E;
 
+typedef enum halt_condition_causes
+{
+    BOOTLOADER_ERR_DFU_ERROR,
+    BOOTLOADER_ERR_INVALID_FLASH,
+} halt_condition_causes_E;
+
 extern bootloader_state_E bootloader_current_state;
 
 

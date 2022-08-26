@@ -97,8 +97,6 @@ DFU_STATUS_E dfu_run()
             new_info.flash_valid = true;
             new_info.dfu_request = false;
             write_application_info(&new_info);
-
-            hal_reset();
             break;
 
         case DFU_STATE_ERROR:;

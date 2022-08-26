@@ -69,3 +69,31 @@ TEST(bootloader_test, launch_app_if_valid_app)
     mock_c()->checkExpectations();
 }
 
+//Test that the bootloader moves to the HALT state if the application is invalid
+TEST(bootloader_test, halt_if_invalid_app)
+{
+    application_info_flash_t test_info;
+    test_info.application_size = 0x12345678;
+    test_info.application_crc = 0x87654321;
+    test_info.dfu_request = false;
+    test_info.flash_valid = false;
+    mock_c()->expectOneCall("read_application_info")->andReturnPointerValue((void*)&test_info);
+    bootloader_current_state = BOOTLOADER_STATE_LAUNCH_APP;
+    bootloader_app_run();
+    CHECK_EQUAL(BOOTLOADER_STATE_HALT, bootloader_current_state);
+}
+
+//Test that the bootloader in HALT status turns DFU request on
+TEST(bootloader_test, dfu_request_on_halt)
+{
+    mock_c()->ignoreOtherCalls();
+    application_info_flash_t test_info;
+    test_info.application_size = 0x00;
+    test_info.application_crc = 0x00;
+    test_info.dfu_request = true;
+    test_info.flash_valid = false;
+    mock_c()->expectOneCall("write_application_info")->withMemoryBufferParameter("info", (uint8_t *)&test_info, sizeof(test_info));
+    bootloader_current_state = BOOTLOADER_STATE_HALT;
+    bootloader_app_run();
+    mock_c()->checkExpectations();
+}
