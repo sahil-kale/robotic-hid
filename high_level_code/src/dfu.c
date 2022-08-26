@@ -69,27 +69,37 @@ DFU_STATUS_E dfu_run()
     if(data.size != 0 && data.data != NULL && data.data[0] == DFU_SOF_identifier)
     {
         is_data_valid = true;
-        dfu_time_last_received = hal_dfu_gettick();
-        switch(dfu_state.state)
-        {
-            
-            case DFU_STATE_START:;
-                break;
+        dfu_time_last_received = hal_dfu_gettick();   
+    }
 
+    switch(dfu_state.state)
+    {
+        case DFU_STATE_START:;
+            if(is_data_valid)
+            {
+                status = dfu_process_packet(data.data);
+            }
+            break;
 
-            case DFU_STATE_DATA_EXCHANGE:;
-                break;
+        case DFU_STATE_DATA_EXCHANGE:;
+            if(is_data_valid)
+            {
+                status = dfu_process_packet(data.data);
+            }
+            break;
 
-            case DFU_STATE_COMPLETE:;
-                break;
+        case DFU_STATE_COMPLETE:;
+            hal_dfu_reset();
+            break;
 
-            case DFU_STATE_ERROR:;
-                break;
-            
-            default:
-                break;
+        case DFU_STATE_ERROR:;
+            //Do nothing, assume state has been set
+            break;
+        
+        default:
+            status = DFU_STATUS_UNKNOWN_ERROR;
+            break;
 
-        }   
     }
 
     uint32_t current_time = hal_dfu_gettick();

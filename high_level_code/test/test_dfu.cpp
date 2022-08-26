@@ -331,4 +331,14 @@ TEST(dfu_tests, dfu_state_machine_timesout_on_incorrect_packet)
     CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
 }
 
+//Test that HAL DFU reset is called when the state is set to complete
+TEST(dfu_tests, reset_test)
+{
+    //Set the dfu struct to 0 using memset
+    memset(&dfu_state, 0, sizeof(dfu_state));
+    dfu_state.state = DFU_STATE_COMPLETE;
+    mock_c()->ignoreOtherCalls();
+    mock_c()->expectOneCall("hal_dfu_reset");
+}
+
 #pragma GCC diagnostic pop
