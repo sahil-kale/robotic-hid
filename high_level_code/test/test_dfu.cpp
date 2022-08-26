@@ -7,6 +7,7 @@ extern "C" {
 #include "hal_dfu.h"
 #include "utility.h"
 #include "common.h"
+#include "hal_bootloader_app.h"
 #include <cstring> 
 }
 
@@ -167,6 +168,7 @@ TEST(dfu_tests, dfu_process_packet_state_change_when_complete)
 
     //Expect call to DFU validate
     mock_c()->expectOneCall("hal_dfu_validate_crc")->withUnsignedLongIntParameters("address", APP_START_ADDRESS)->withUnsignedLongIntParameters("size", dfu_state.prog_size)->withUnsignedLongIntParameters("crc", dfu_state.prog_crc)->andReturnBoolValue(true);
+    //expect call to write application info with the following values
 
     DFU_STATUS_E returnState = dfu_process_packet((uint8_t *)test_packet);
     CHECK_EQUAL(DFU_STATE_COMPLETE, dfu_state.state);
@@ -329,6 +331,25 @@ TEST(dfu_tests, dfu_state_machine_timesout_on_incorrect_packet)
     status = dfu_run();
     CHECK_EQUAL(DFU_STATUS_ERROR_HOST_TIMEOUT, status);
     CHECK_EQUAL(DFU_STATE_ERROR, dfu_state.state);
+}
+
+TEST(dfu_tests, sets_app_parameters_on_completion)
+{
+    mock_c()->ignoreOtherCalls();
+    memset(&dfu_state, 0, sizeof(dfu_state));
+    dfu_state.state = DFU_STATE_COMPLETE;
+    dfu_state.prog_size = 0x12345678;
+    dfu_state.prog_crc = 0x87654321;
+
+    application_info_flash_t test_info;
+    test_info.application_size = dfu_state.prog_size;
+    test_info.application_crc = dfu_state.prog_crc;
+    test_info.dfu_request = false;
+    test_info.flash_valid = true;
+    mock_c()->expectOneCall("write_application_info")->withMemoryBufferParameter("info", (uint8_t *)&test_info, sizeof(test_info));
+
+    DFU_STATUS_E status = dfu_run();
+    CHECK_EQUAL(DFU_STATUS_OK, status);
 }
 
 //Test that HAL DFU reset is called when the state is set to complete

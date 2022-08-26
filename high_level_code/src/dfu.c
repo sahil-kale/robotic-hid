@@ -90,6 +90,14 @@ DFU_STATUS_E dfu_run()
             break;
 
         case DFU_STATE_COMPLETE:;
+            //Write new application info to flash
+            application_info_flash_t new_info;
+            new_info.application_size = dfu_state.prog_size;
+            new_info.application_crc = dfu_state.prog_crc;
+            new_info.flash_valid = true;
+            new_info.dfu_request = false;
+            write_application_info(&new_info);
+
             hal_reset();
             break;
 
