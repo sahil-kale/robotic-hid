@@ -1,5 +1,8 @@
 #include "utility.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+
 uint16_t swap_uint16(uint16_t val)
 {
     return (val << 8) | (val >> 8);
@@ -14,3 +17,5 @@ uint64_t swap_uint64(uint64_t val)
 {
     return ((uint64_t)swap_uint32(val) << 32) | swap_uint32(val >> 32);
 }
+
+#pragma GCC diagnostic pop

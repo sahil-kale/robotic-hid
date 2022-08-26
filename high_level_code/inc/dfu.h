@@ -1,14 +1,10 @@
 #ifndef DFU_H
 #define DFU_H
 #define ENABLE_OTA_DFU
-#include "stdint.h"
-#include "stdbool.h"
-
-#ifdef UNITTEST
-#define PACKED 
-#else
-#define PACKED __attribute__((packed))
-#endif
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include "utility.h"
 
 typedef enum DFU_STATE
 {

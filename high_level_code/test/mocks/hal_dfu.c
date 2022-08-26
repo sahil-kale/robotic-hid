@@ -45,8 +45,3 @@ uint32_t hal_dfu_gettick()
     mock_c()->actualCall("hal_dfu_gettick");
     return mock_c()->returnValue().value.unsignedIntValue;
 }
-
-void hal_dfu_reset(void)
-{
-    mock_c()->actualCall("hal_dfu_reset");
-}

@@ -5,6 +5,7 @@
 #include "utility.h"
 #include "common.h"
 #include "stdio.h"
+#include "hal_bootloader_app.h"
 
 //Disable Wconversion warning
 #pragma GCC diagnostic push
@@ -89,7 +90,7 @@ DFU_STATUS_E dfu_run()
             break;
 
         case DFU_STATE_COMPLETE:;
-            hal_dfu_reset();
+            hal_reset();
             break;
 
         case DFU_STATE_ERROR:;

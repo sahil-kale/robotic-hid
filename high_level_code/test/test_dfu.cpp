@@ -338,7 +338,7 @@ TEST(dfu_tests, reset_test)
     memset(&dfu_state, 0, sizeof(dfu_state));
     dfu_state.state = DFU_STATE_COMPLETE;
     mock_c()->ignoreOtherCalls();
-    mock_c()->expectOneCall("hal_dfu_reset");
+    mock_c()->expectOneCall("hal_reset");
 }
 
 #pragma GCC diagnostic pop
