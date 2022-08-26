@@ -148,6 +148,14 @@ DFU_STATUS_E dfu_process_packet(uint8_t* buffer)
             dfu_state.prog_crc = prog_info->prog_crc;
             dfu_state.bytes_sent = 0;
 
+            //Update the application info struct
+            application_info_flash_t info;
+            info.application_size = prog_info->prog_size;
+            info.application_crc = prog_info->prog_crc;
+            info.flash_valid = false;
+            info.dfu_request = false;
+            write_application_info(&info);
+
             //Erase flash
             status = hal_dfu_eraseflash(APP_SECTOR_START, APP_SECTOR_END - APP_SECTOR_START + 1);
 

@@ -88,7 +88,19 @@ TEST(dfu_tests, dfu_process_start_packet)
 
     mock_c()->expectOneCall("send_data_to_dfu_host")->withUnsignedIntParameters("size", sizeof(packet_dfu_header_t))->withMemoryBufferParameter("data", ack_buffer, sizeof(ack_buffer));
 
+    //Expect a call to the application info to be updated
+    application_info_flash_t test_application_info;
+    test_application_info.application_size = 0x000010BC;
+    test_application_info.application_crc = 0x12345678;
+    test_application_info.flash_valid = false;
+    test_application_info.dfu_request = false;
+
+    mock_c()->expectOneCall("write_application_info")->withMemoryBufferParameter("info", (uint8_t *)&test_application_info, sizeof(test_application_info));
+
+
     DFU_STATUS_E returnState = dfu_process_packet((uint8_t *)test_packet);
+
+    mock_c()->checkExpectations();
 
     //Check if the DFU status struct equals the above parameters
     CHECK_EQUAL(0x000010BC, dfu_state.prog_size);
