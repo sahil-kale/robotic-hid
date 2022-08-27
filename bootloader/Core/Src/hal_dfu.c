@@ -27,6 +27,10 @@ void append_USB_data_rx_buffer(uint8_t *data, size_t size)
     memcpy(data_handle->data, data, size); //Copy the data size
     data_handle->size = size; //Copy the data size
     usb_packet_buffer_index_end++; //Increment the buffer index
+    if (usb_packet_buffer_index_end == NUM_USB_PACKETS_STORED)
+    {
+        usb_packet_buffer_index_end = 0;
+    }
 }
 
 DFU_STATUS_E hal_dfu_init(void)
@@ -50,6 +54,11 @@ DFU_data_handle_t get_data_from_dfu_host(void)
     data_handle = data_handles[usb_packet_buffer_index_start];
     data_handles[usb_packet_buffer_index_start].size = 0; //Clear the data size
     usb_packet_buffer_index_start++;
+    if (usb_packet_buffer_index_start == NUM_USB_PACKETS_STORED)
+    {
+        usb_packet_buffer_index_start = 0;
+    }
+
     return data_handle;
 }
 

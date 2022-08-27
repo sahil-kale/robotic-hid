@@ -42,7 +42,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define GPIO_USERENTER_PORT GPIOB
+#define GPIO_USERENTER_PIN GPIO_PIN_14
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -97,16 +98,20 @@ int main(void)
   set_lcd_cursor(0,0);
   char testArray[] = "Starting Bootloader";
   write_lcd(testArray, sizeof(testArray));
+  set_lcd_cursor(1,0);
+  char start_dfu_msg[] = "Press enter for DFU";
+  write_lcd(start_dfu_msg, sizeof(start_dfu_msg));
 
   HAL_Delay(1000);
   bootloader_app_init();
-  //hal_jump_to_app();
 
-  //application_info_flash_t debugInfo = {0};
-  //debugInfo.dfu_request = false;
-  //debugInfo.flash_valid = true;
-  //debugInfo.application_crc = 0xdeadbeef;
-  //write_application_info(&debugInfo);
+  //FOR DEBUGGING ONLY!
+  if(!HAL_GPIO_ReadPin(GPIO_USERENTER_PORT, GPIO_USERENTER_PIN))
+  {
+    application_info_flash_t dfu_info = read_application_info();
+    dfu_info.dfu_request = true;
+    write_application_info(&dfu_info);
+  }
 
   /* USER CODE END 2 */
 

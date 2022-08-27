@@ -58,10 +58,19 @@ void bootloader_app_run(void)
             break;
         case BOOTLOADER_STATE_DFU:;
             dfu_init();
+
+            char starting_dfu_msg[] = "Starting DFU";
+            set_lcd_cursor(0, 0);
+            write_lcd(starting_dfu_msg, sizeof(starting_dfu_msg));
+
             DFU_STATUS_E dfu_curr_status = DFU_STATUS_OK;
             do
             {
                 dfu_curr_status = dfu_run();
+                if(dfu_state.state == DFU_STATE_COMPLETE || dfu_state.state == DFU_STATE_ERROR)
+                {
+                	break;
+                }
             } while((bootloader_current_state == BOOTLOADER_STATE_DFU) && (dfu_curr_status == DFU_STATUS_OK));
             if(dfu_curr_status != DFU_STATUS_OK)
             {

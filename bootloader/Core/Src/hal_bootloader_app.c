@@ -4,7 +4,7 @@
 #include <string.h>
 #include "hal_bootloader_app.h"
 
-#define DEBUG_TRIGGER_DFU_MODE
+//#define DEBUG_TRIGGER_DFU_MODE
 #ifdef DEBUG_TRIGGER_DFU_MODE
 #warning DFU mode is being intentionally triggered...
 #endif

@@ -10,6 +10,8 @@
 static void send_joystick_report(const gameHID_t *report);
 static void buttonlogic(void);
 
+static hal_application_button_state_t hystered_button_state = {0};
+
 //Static Game HId inststnace for LCD to update
 static gameHID_t hid_data = {0};
 
@@ -40,7 +42,6 @@ void joystick_task(void const * argument)
 
 static void buttonlogic(void)
 {
-    static hal_application_button_state_t hystered_button_state = {0};
     //Sample Buttons:
     hal_application_button_state_t button_state = update_button_states();
     //Set left and right button requests
@@ -155,7 +156,15 @@ void lcd_task(void const * argument)
                 }
 
                 
-                sprintf(line_two_buffer, "Sys Operational");
+                sprintf(line_two_buffer, "Push ENT for FW UP");
+                if(!hystered_button_state.lcd_button_enter)
+                {
+                    application_info_flash_t application_info_flash = read_application_info();
+                    application_info_flash.dfu_request = true;
+                    write_application_info(&application_info_flash);
+                    hal_reset();
+
+                }
                 break;
             case LCD_PAGE_INFO:
                 sprintf(line_one_buffer, "Robotic HID");
