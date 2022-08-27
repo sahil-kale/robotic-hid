@@ -13,6 +13,7 @@ extern "C" {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 
 // create a test group
 TEST_GROUP(dfu_tests){

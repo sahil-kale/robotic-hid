@@ -9,6 +9,8 @@ typedef struct
     uint8_t *data;
 } DFU_data_handle_t;
 
+void append_USB_data_rx_buffer(uint8_t *data, size_t size);
+
 /**
  * @brief Initialize the DFU module.
  * 
@@ -46,9 +48,9 @@ DFU_STATUS_E hal_dfu_writeflash(uint32_t address, uint32_t size, const uint8_t *
  * 
  * @param baseSector base sector to start erasing from
  * @param noSectors Number of sectors to erase
- * @return DFU_STATE_E 
+ * @return DFU_STATUS_E
  */
-DFU_STATE_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors);
+DFU_STATUS_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors);
 
 bool hal_dfu_validate_crc(uint32_t address, uint32_t size, uint32_t crc);
 

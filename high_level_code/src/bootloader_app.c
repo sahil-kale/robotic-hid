@@ -12,6 +12,11 @@ static void display_halt_condition_message(halt_condition_causes_E cause, uint16
 
 bootloader_state_E bootloader_current_state = BOOTLOADER_STATE_RESET;
 
+void bootloader_app_init(void)
+{
+    dfu_init();
+}
+
 bootloader_state_E determine_bootloader_state_from_reset_vector(void)
 {
     bootloader_state_E state = BOOTLOADER_STATE_RESET;

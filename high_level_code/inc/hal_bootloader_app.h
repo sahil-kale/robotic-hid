@@ -2,15 +2,7 @@
 #define HAL_BOOTLOADER_APP_H
 #include <stdint.h>
 #include "utility.h"
-
-typedef struct PACKED application_info_flash
-{
-    bool flash_valid;
-    bool dfu_request;
-    uint32_t application_size;
-    uint32_t application_crc;
-} application_info_flash_t;
-
+#include "common.h"
 /**
  * @brief Jump to application
  * 

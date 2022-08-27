@@ -22,7 +22,7 @@ DFU_STATUS_E send_data_to_dfu_host(DFU_data_handle_t data)
     return mock_c()->returnValue().value.unsignedIntValue;
 }
 
-DFU_STATE_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors)
+DFU_STATUS_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors)
 {
     mock_c()->actualCall("hal_dfu_eraseflash")->withUnsignedIntParameters("baseSector", baseSector)->withUnsignedIntParameters("noSectors", noSectors);
     return mock_c()->returnValue().value.unsignedIntValue;

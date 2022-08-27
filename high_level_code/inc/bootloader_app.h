@@ -27,6 +27,12 @@ extern bootloader_state_E bootloader_current_state;
 bootloader_state_E determine_bootloader_state_from_reset_vector(void);
 
 /**
+ * @brief initalize the bootloader app
+ * 
+ */
+void bootloader_app_init(void);
+
+/**
  * @brief Runs the bootloader application. Call in own while loop.
  * 
  */
