@@ -4,6 +4,7 @@
 #include "stm32l1xx_hal.h"
 #include "usbd_cdc_if.h"
 #include "common.h"
+#include "usb_device.h"
 
 #define MAX_USB_PACKET_SIZE (64U)
 #define NUM_USB_PACKETS_STORED (10U)
@@ -32,6 +33,7 @@ void append_USB_data_rx_buffer(uint8_t *data, size_t size)
 
 DFU_STATUS_E hal_dfu_init(void)
 {
+	MX_USB_DEVICE_Init();
     for(size_t i = 0; i < NUM_USB_PACKETS_STORED; i++)
     {
         data_handles[i].data = usb_packet_data_buffer + (i * MAX_USB_PACKET_SIZE);

@@ -52,7 +52,7 @@
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.jtagDeviceId" value="com.st.stm32cube.ide.mcu.debug.stlink"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.pcRegister" value=""/>
     <intAttribute key="org.eclipse.cdt.debug.gdbjtag.core.portNumber" value="61234"/>
-    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.runCommands" value="add-symbol-file ../hardware_code/Debug/robotic-hid.elf 0x0800b140"/>
+    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.runCommands" value="add-symbol-file ../hardware_code/Debug/robotic-hid.elf 0x0800c140"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setPcRegister" value="false"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setResume" value="true"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setStopAt" value="true"/>

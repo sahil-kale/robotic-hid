@@ -21,13 +21,13 @@
 #include "main.h"
 #include "i2c.h"
 #include "spi.h"
-#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lcd.h"
-#include "dfu.h"
+#include "bootloader_app.h"
+#include "hal_bootloader_app.h"
 
 /* USER CODE END Includes */
 
@@ -92,7 +92,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   init_lcd();
   set_lcd_cursor(0,0);
@@ -100,9 +99,8 @@ int main(void)
   write_lcd(testArray, sizeof(testArray));
 
   HAL_Delay(1000);
-
-  void (*app_reset_handler)(void) = (void*)(*((volatile uint32_t*)(0x800b000UL + 4U)));
-  app_reset_handler();
+  hal_jump_to_app();
+  bootloader_app_init();
 
   /* USER CODE END 2 */
 
@@ -110,6 +108,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	bootloader_app_run();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

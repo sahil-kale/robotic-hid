@@ -14,7 +14,7 @@ bootloader_state_E bootloader_current_state = BOOTLOADER_STATE_RESET;
 
 void bootloader_app_init(void)
 {
-    dfu_init();
+    
 }
 
 bootloader_state_E determine_bootloader_state_from_reset_vector(void)
@@ -57,6 +57,7 @@ void bootloader_app_run(void)
             }
             break;
         case BOOTLOADER_STATE_DFU:;
+            dfu_init();
             DFU_STATUS_E dfu_curr_status = DFU_STATUS_OK;
             do
             {
