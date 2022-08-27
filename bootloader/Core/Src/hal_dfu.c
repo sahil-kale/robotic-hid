@@ -6,6 +6,11 @@
 #include "common.h"
 #include "usb_device.h"
 
+#define DISABLE_HOST_TIMEOUT
+#ifdef DISABLE_HOST_TIMEOUT
+#warning DFU host timeout is disabled for debugging
+#endif
+
 #define MAX_USB_PACKET_SIZE (64U)
 #define NUM_USB_PACKETS_STORED (10U)
 
@@ -13,13 +18,6 @@ static uint8_t usb_packet_data_buffer[MAX_USB_PACKET_SIZE * NUM_USB_PACKETS_STOR
 static DFU_data_handle_t data_handles[NUM_USB_PACKETS_STORED] = {0};
 static uint8_t usb_packet_buffer_index_start = 0;
 static uint8_t usb_packet_buffer_index_end = 0;
-
-static uint32_t determine_page_address_from_sector(uint8_t sector);
-
-static uint32_t determine_page_address_from_sector(uint8_t sector)
-{
-	return (sector * SECTOR_SIZE) + APP_START_ADDRESS;
-}
 
 void append_USB_data_rx_buffer(uint8_t *data, size_t size)
 {
@@ -78,10 +76,12 @@ DFU_STATUS_E hal_dfu_writeflash(uint32_t address, uint32_t size, const uint8_t *
             break;   
         }
 
+        uint32_t* data_recasted = (uint32_t *)data;
 
-        for(uint32_t i = 0; i < size; i++)
+        for(uint32_t i = 0; i < (size/4 + ((size % 4) > 0)); i++)
         {
-            hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAMDATA_BYTE, address + i, data[i]);
+        	uint32_t address_to_write = address + (i*sizeof(uint32_t));
+            hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address_to_write, data_recasted[i]);
             if(hal_status != HAL_OK)
             {
                 status = DFU_STATUS_ERROR_FLASH_WRITE;
@@ -115,7 +115,7 @@ DFU_STATUS_E hal_dfu_eraseflash(uint32_t baseSector, uint32_t noSectors)
         //Setup erase
         FLASH_EraseInitTypeDef EraseInitStruct = {0};
         EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
-        EraseInitStruct.PageAddress = determine_page_address_from_sector(APP_START_ADDRESS);
+        EraseInitStruct.PageAddress = APP_START_ADDRESS;
         EraseInitStruct.NbPages = (APP_SECTOR_END - APP_SECTOR_START + 1) * SECTOR_SIZE/PAGE_SIZE;
 
         //Unlock Flash
@@ -160,5 +160,8 @@ bool hal_dfu_validate_crc(uint32_t address, uint32_t size, uint32_t crc)
 
 uint32_t hal_dfu_gettick(void)
 {
+#ifdef DISABLE_HOST_TIMEOUT
+return 1;
+#endif
     return HAL_GetTick();
 }

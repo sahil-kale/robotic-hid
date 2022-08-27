@@ -12,6 +12,7 @@ typedef struct PACKED application_info_flash
 } application_info_flash_t;
 
 extern const uint32_t APP_START_ADDRESS;
+extern const uint32_t BOOTLOADER_START_ADDRESS;
 extern const uint8_t DFU_SOF_identifier;
 extern const uint8_t APP_SECTOR_START;
 extern const uint8_t APP_SECTOR_END;

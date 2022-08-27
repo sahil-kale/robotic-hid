@@ -1,7 +1,16 @@
-#ifndef HAL_BOOTLOADER_H
-#define HAL_BOOTLOADER_H
+#ifndef HAL_BOOTLOADER_APP_H
+#define HAL_BOOTLOADER_APP_H
 #include <stdint.h>
 #include <string.h>
+#include "hal_bootloader_app.h"
+
+#define DEBUG_TRIGGER_DFU_MODE
+#ifdef DEBUG_TRIGGER_DFU_MODE
+#warning DFU mode is being intentionally triggered...
+#endif
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waddress-of-packed-member"
 
 #include "common.h"
 #include "stm32l1xx_hal.h"
@@ -21,7 +30,18 @@ void hal_reset(void)
 
 static uint32_t determine_page_address_from_sector(uint8_t sector)
 {
-	return (sector * SECTOR_SIZE) + APP_START_ADDRESS;
+	return (sector * SECTOR_SIZE) + BOOTLOADER_START_ADDRESS;
+}
+
+application_info_flash_t read_application_info(void)
+{
+    application_info_flash_t info = {0};
+    uint32_t address = determine_page_address_from_sector(APP_INFO_SECTOR);
+    memcpy(&info, (void*)(address), sizeof(application_info_flash_t));
+#ifdef DEBUG_TRIGGER_DFU_MODE
+    info.dfu_request = true;
+#endif
+    return info;
 }
 
 void write_application_info(application_info_flash_t* info)
@@ -42,6 +62,9 @@ void write_application_info(application_info_flash_t* info)
 		return;
 	}
 
+	//Clear flags
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR);
+
 	uint32_t page_error = 0;
 	hal_status = HAL_FLASHEx_Erase(&EraseInitStruct, &page_error);
 
@@ -50,10 +73,14 @@ void write_application_info(application_info_flash_t* info)
 		return;
 	}
 
-	uint8_t* data = (uint8_t*)info;
-	for(size_t i = 0; i < sizeof(application_info_flash_t); i++)
+	uint32_t* data = (uint32_t*)info;
+
+	//Convert info to a uint32_t data buffer
+
+	for(size_t i = 0; i < sizeof(application_info_flash_t)/sizeof(uint32_t) + ((sizeof(application_info_flash_t) % sizeof(uint32_t)) > 0); i++)
 	{
-		hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAMDATA_BYTE, (uint32_t)(determine_page_address_from_sector(APP_INFO_SECTOR) + i), data[i]);
+		uint32_t address = determine_page_address_from_sector(APP_INFO_SECTOR) + (i * sizeof(uint32_t));
+		hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, data[i]);
 
 		if(hal_status != HAL_OK)
 		{
@@ -67,13 +94,11 @@ void write_application_info(application_info_flash_t* info)
 		return;
 	}
 
+	application_info_flash_t test_info = read_application_info();
+	(void)test_info;
+
 }
 
-application_info_flash_t read_application_info(void)
-{
-    application_info_flash_t info = {0};
-    memcpy(&info, (void*)(determine_page_address_from_sector(APP_INFO_SECTOR)), sizeof(application_info_flash_t));
-    return info;
-}
+#pragma GCC diagnostic pop
 
 #endif

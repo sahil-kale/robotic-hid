@@ -99,8 +99,14 @@ int main(void)
   write_lcd(testArray, sizeof(testArray));
 
   HAL_Delay(1000);
-  hal_jump_to_app();
   bootloader_app_init();
+  //hal_jump_to_app();
+
+  //application_info_flash_t debugInfo = {0};
+  //debugInfo.dfu_request = false;
+  //debugInfo.flash_valid = true;
+  //debugInfo.application_crc = 0xdeadbeef;
+  //write_application_info(&debugInfo);
 
   /* USER CODE END 2 */
 
