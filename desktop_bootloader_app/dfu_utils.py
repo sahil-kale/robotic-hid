@@ -49,9 +49,9 @@ class dfu_host:
                 if not self.__check_acknowledgement(len(data_packet)):
                     return
                 self.bytes_sent += len(data_packet)
-                print("Bytes sent: " + str(self.bytes_sent))
+                #print("Bytes sent: " + str(self.bytes_sent))
 
-        print("File uploaded")
+        #print("File uploaded")
         pass
 
     def __generate_packet_header(self, packet_type: PacketType, packet_length: int) -> bytes:
