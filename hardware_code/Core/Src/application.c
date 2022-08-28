@@ -1,5 +1,6 @@
 #include "application.h"
 #include "adc.h"
+#include "common.h"
 #include "lcd.h"
 #include "hal_application.h"
 #include "cmsis_os2.h"
@@ -9,6 +10,8 @@
 
 static void send_joystick_report(const gameHID_t *report);
 static void buttonlogic(void);
+
+static hal_application_button_state_t hystered_button_state = {0};
 
 //Static Game HId inststnace for LCD to update
 static gameHID_t hid_data = {0};
@@ -26,10 +29,10 @@ void joystick_task(void const * argument)
     adc_data = get_adc_data();
 
     //Scale ADC value from -16384 to 16384 to -127 to 127:
-    hid_data.JoyLX = (int8_t)(adc_data.adc_data[0]/256);
-    hid_data.JoyLY = (int8_t)(adc_data.adc_data[1]/256);
-    hid_data.JoyRX = (int8_t)(adc_data.adc_data[2]/256);
-    hid_data.JoyRY = (int8_t)(adc_data.adc_data[3]/256);
+    hid_data.JoyLX = (int8_t)((adc_data.adc_data[0]*2)/256);
+    hid_data.JoyLY = (int8_t)((adc_data.adc_data[1]*2)/256);
+    hid_data.JoyRX = (int8_t)((adc_data.adc_data[2]*2)/256);
+    hid_data.JoyRY = (int8_t)((adc_data.adc_data[3]*2)/256);
 
     buttonlogic();
 
@@ -40,7 +43,6 @@ void joystick_task(void const * argument)
 
 static void buttonlogic(void)
 {
-    static hal_application_button_state_t hystered_button_state = {0};
     //Sample Buttons:
     hal_application_button_state_t button_state = update_button_states();
     //Set left and right button requests
@@ -155,10 +157,18 @@ void lcd_task(void const * argument)
                 }
 
                 
-                sprintf(line_two_buffer, "Sys Operational");
+                sprintf(line_two_buffer, "Push ENT for FW UPD");
+                if(!hystered_button_state.lcd_button_enter)
+                {
+                    application_info_flash_t application_info_flash = read_application_info();
+                    application_info_flash.dfu_request = true;
+                    write_application_info(&application_info_flash);
+                    hal_reset();
+
+                }
                 break;
             case LCD_PAGE_INFO:
-                sprintf(line_one_buffer, "Robotic HID");
+                sprintf(line_one_buffer, "Robotic HID %d.%d", app_version_number_major, app_version_number_minor);
                 sprintf(line_two_buffer, "Sahil Kale 2022");
                 break;
             default:
