@@ -131,6 +131,10 @@ static void display_halt_condition_message(halt_condition_causes_E cause, uint16
     }
     clear_lcd();
     set_lcd_cursor(0, 0);
+    set_lcd_cursor(0, 0);
     write_lcd(msg, sizeof(msg));
+    char reset_msg[] = "Unplug and reset";
+    set_lcd_cursor(1,0);
+    write_lcd(reset_msg, sizeof(reset_msg));
 
 }
