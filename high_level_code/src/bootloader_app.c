@@ -59,6 +59,8 @@ void bootloader_app_run(void)
         case BOOTLOADER_STATE_DFU:;
             dfu_init();
 
+            clear_lcd();
+            set_lcd_cursor(0, 0);
             char starting_dfu_msg[] = "Starting DFU";
             set_lcd_cursor(0, 0);
             write_lcd(starting_dfu_msg, sizeof(starting_dfu_msg));

@@ -1,5 +1,6 @@
 #include "application.h"
 #include "adc.h"
+#include "common.h"
 #include "lcd.h"
 #include "hal_application.h"
 #include "cmsis_os2.h"
@@ -156,7 +157,7 @@ void lcd_task(void const * argument)
                 }
 
                 
-                sprintf(line_two_buffer, "Push ENT for FW UP");
+                sprintf(line_two_buffer, "Push ENT for FW UPD");
                 if(!hystered_button_state.lcd_button_enter)
                 {
                     application_info_flash_t application_info_flash = read_application_info();
@@ -167,7 +168,7 @@ void lcd_task(void const * argument)
                 }
                 break;
             case LCD_PAGE_INFO:
-                sprintf(line_one_buffer, "Robotic HID");
+                sprintf(line_one_buffer, "Robotic HID %d.%d", app_version_number_major, app_version_number_minor);
                 sprintf(line_two_buffer, "Sahil Kale 2022");
                 break;
             default:

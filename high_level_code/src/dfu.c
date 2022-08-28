@@ -6,11 +6,13 @@
 #include "common.h"
 #include "stdio.h"
 #include "hal_bootloader_app.h"
+#include "lcd.h"
 
 //Disable Wconversion warning
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wformat"
 
 
 DFU_STATE_INFORMATION_T dfu_state;
@@ -85,6 +87,11 @@ DFU_STATUS_E dfu_run()
         case DFU_STATE_DATA_EXCHANGE:;
             if(is_data_valid)
             {
+                //Update LCD with bytes received versus total bytes to receive
+                char lcd_string[20] = {0};
+                sprintf(lcd_string, "Rec'd %d/%d", dfu_state.bytes_sent,dfu_state.prog_size);
+                set_lcd_cursor(1,0);
+                write_lcd(lcd_string, sizeof(lcd_string));                
                 status = dfu_process_packet(data.data);
             }
             break;
