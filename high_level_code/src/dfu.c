@@ -36,7 +36,7 @@ DFU_STATUS_E dfu_ack(uint16_t payload_len)
     packet_dfu_header_t packet_header;
     packet_header.SOF = DFU_SOF_identifier;
     packet_header.packet_type = DFU_PACKET_ACK;
-    packet_header.payload_length = swap_uint16(payload_len);
+    packet_header.payload_length = swap_uint16(payload_len); //In this frame format, the received payload length is sent back
 
 
     DFU_data_handle_t ack_data;
@@ -69,7 +69,7 @@ DFU_STATUS_E dfu_run()
 
     DFU_data_handle_t data = get_data_from_dfu_host();
     bool is_data_valid = false;
-    if(data.size != 0 && data.data != NULL && data.data[0] == DFU_SOF_identifier)
+    if(data.size != 0 && data.data != NULL && data.data[0] == DFU_SOF_identifier) //Confirms that the data is intended for the bootloader
     {
         is_data_valid = true;
         dfu_time_last_received = hal_dfu_gettick();   

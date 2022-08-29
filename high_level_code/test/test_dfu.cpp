@@ -182,6 +182,12 @@ TEST(dfu_tests, dfu_process_packet_state_change_when_complete)
     //Expect call to DFU validate
     mock_c()->expectOneCall("hal_dfu_validate_crc")->withUnsignedLongIntParameters("address", APP_START_ADDRESS)->withUnsignedLongIntParameters("size", dfu_state.prog_size)->withUnsignedLongIntParameters("crc", dfu_state.prog_crc)->andReturnBoolValue(true);
     //expect call to write application info with the following values
+    application_info_flash_t test_info;
+    test_info.application_size = dfu_state.prog_size;
+    test_info.application_crc = dfu_state.prog_crc;
+    test_info.flash_valid = true;
+    test_info.dfu_request = false;
+    mock_c()->expectOneCall("write_application_info")->withMemoryBufferParameter("info", (uint8_t *)&test_info, sizeof(test_info));
 
     DFU_STATUS_E returnState = dfu_process_packet((uint8_t *)test_packet);
     CHECK_EQUAL(DFU_STATE_COMPLETE, dfu_state.state);

@@ -72,6 +72,7 @@ TEST(bootloader_test, launch_app_if_valid_app)
 //Test that the bootloader moves to the HALT state if the application is invalid
 TEST(bootloader_test, halt_if_invalid_app)
 {
+    mock_c()->ignoreOtherCalls();
     application_info_flash_t test_info;
     test_info.application_size = 0x12345678;
     test_info.application_crc = 0x87654321;

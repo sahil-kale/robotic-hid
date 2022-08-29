@@ -29,9 +29,10 @@ void init_adc(void)
 {
     init_hal_ads130b04();
     assert_chip_select(false);
-    set_sync_reset_pin(false);
+    set_sync_reset_pin(false); //Reset the chip
     for(size_t i = 0; i<10000; i++); //Crude Delay but fast enough for the ADS130B04 to reset.
     set_sync_reset_pin(true);
+
     //Set clock to internal clock and osr to 8192
     setClock(false, 0x06);
 
@@ -122,10 +123,10 @@ void writeRegister(uint8_t reg, uint16_t value)
 
 void writeRegisterMasked(uint8_t reg, uint16_t value, uint16_t mask)
 {
-    uint16_t regValue = readRegister(reg);
+    uint16_t regValue = readRegister(reg); //Read the existing register value
     regValue &= ~mask;
-    regValue |= (value & mask);
-    writeRegister(reg, regValue);
+    regValue |= (value & mask); //Apply new value
+    writeRegister(reg, regValue); //Write whole register
 }
 
 

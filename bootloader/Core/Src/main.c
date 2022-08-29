@@ -98,8 +98,6 @@ int main(void)
   set_lcd_cursor(0,0);
   char testArray[] = "Starting Bootloader";
   write_lcd(testArray, sizeof(testArray));
-
-  HAL_Delay(1000);
   bootloader_app_init();
 
   /* USER CODE END 2 */
