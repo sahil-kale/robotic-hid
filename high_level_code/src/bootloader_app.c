@@ -14,14 +14,14 @@ bootloader_state_E bootloader_current_state = BOOTLOADER_STATE_RESET;
 
 void bootloader_app_init(void)
 {
-    
+    return; //Nothing
 }
 
 bootloader_state_E determine_bootloader_state_from_reset_vector(void)
 {
     bootloader_state_E state = BOOTLOADER_STATE_RESET;
 
-    application_info_flash_t info = read_application_info();
+    application_info_flash_t info = read_application_info(); //Read application info from flash
     if(info.dfu_request)
     {
         state = BOOTLOADER_STATE_DFU;
@@ -44,10 +44,11 @@ void bootloader_app_run(void)
         case BOOTLOADER_STATE_RESET:;
             bootloader_current_state = determine_bootloader_state_from_reset_vector();
             break;
-        case BOOTLOADER_STATE_LAUNCH_APP:;
+        case BOOTLOADER_STATE_LAUNCH_APP:;      
             application_info_flash_t info = read_application_info();
             if(info.flash_valid && hal_dfu_validate_crc(APP_START_ADDRESS, info.application_size, info.application_crc))
             {
+                //Send message to LCD to display "Launching application..."
                 hal_jump_to_app();
             }
             else
@@ -57,7 +58,7 @@ void bootloader_app_run(void)
             }
             break;
         case BOOTLOADER_STATE_DFU:;
-            dfu_init();
+            dfu_init(); //This will enumerate the system as a CDC class device
 
             clear_lcd();
             set_lcd_cursor(0, 0);
@@ -88,10 +89,10 @@ void bootloader_app_run(void)
         case BOOTLOADER_STATE_HALT:;
             if(!halt_info_processed)
             {
-                halt_info_processed = true;
-                application_info_flash_t halt_app_info = {0};
-                halt_app_info.dfu_request = true;
-                halt_app_info.flash_valid = false;
+                halt_info_processed = true; //Ensures that when in HALT mode the flash is only written once
+                application_info_flash_t halt_app_info = {0}; 
+                halt_app_info.dfu_request = true; //Set this to true to indicate that the application should be launched in DFU mode
+                halt_app_info.flash_valid = false; //Unknown what happened to the flash beforehand to write it to false
                 write_application_info(&halt_app_info);
                 display_halt_condition_message(cause, err_code);
             }
@@ -109,7 +110,7 @@ void bootloader_app_run(void)
             
             break;
         default:
-            bootloader_current_state = BOOTLOADER_STATE_HALT;
+            bootloader_current_state = BOOTLOADER_STATE_HALT; //We should never get here
             break;
     }
 }
@@ -133,8 +134,9 @@ static void display_halt_condition_message(halt_condition_causes_E cause, uint16
     set_lcd_cursor(0, 0);
     set_lcd_cursor(0, 0);
     write_lcd(msg, sizeof(msg));
+    #ifndef RESET_ON_HALT
     char reset_msg[] = "Unplug and reset";
     set_lcd_cursor(1,0);
     write_lcd(reset_msg, sizeof(reset_msg));
-
+    #endif
 }

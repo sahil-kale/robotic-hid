@@ -2,8 +2,6 @@
 #define JOYSTICK_H
 #include <stdint.h>
 
-
-
 typedef struct gameHID {
 	int8_t JoyLX; 		
   	int8_t JoyLY; 		
